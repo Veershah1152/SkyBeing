@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-skyGreen: #0E7A0D;
+  --color-skyBrown: #6C4E3D;
+  --color-skyBg: #F5F3F0;
+}
+
+@layer base {
+  body {
+    background-color: theme('colors.white');
+    color: theme('colors.gray.800');
+    font-family: theme('fontFamily.sans');
+  }
+}
+
+@layer utilities {
+
+  /* Thin scrollbar for admin sidebar */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #0E7A0D22 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #0E7A0D33;
+    border-radius: 99px;
+  }
+
+  /* Admin fade-in animation */
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .admin-page-enter {
+    animation: fadeSlideIn 0.3s ease-out;
+  }
+
+  /* Search overlay pop-in */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-12px) scale(0.97);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out;
+  }
+}
