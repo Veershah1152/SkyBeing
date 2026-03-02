@@ -93,30 +93,83 @@ const getProductById = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const { name, description, price, category, stock } = req.body;
 
-    const product = await Product.findByIdAndUpdate(
+    const product = await Product.findById(id);
+    if (!product) {
+        throw new ApiError(404, "Product not found");
+    }
+
+    // Extract all updatable fields from body
+    const {
+        name, description, shortDescription, price, mrp, manufacturingPrice,
+        category, subCategory, stock, discount, discountType, discountStartDate,
+        discountEndDate, tax, sku, barcode, tags, minStock, stockStatus,
+        trackStock, shippingWeight, shippingLength, shippingWidth, shippingHeight,
+        productType, variants
+    } = req.body;
+
+    // Handle new image uploads
+    let updatedImages = product.images; // keep existing images by default
+    if (req.files && req.files.length > 0) {
+        const newImages = [];
+        for (const file of req.files) {
+            console.log(`[updateProduct] Uploading: ${file.path}`);
+            const uploaded = await uploadOnCloudinary(file.path);
+            console.log(`[updateProduct] Upload result:`, uploaded?.url || 'FAILED');
+            if (uploaded?.url) newImages.push(uploaded.url);
+        }
+        if (newImages.length > 0) updatedImages = newImages;
+    }
+
+    // Parse JSON fields sent as strings in FormData
+    let parsedTags = product.tags;
+    if (tags) {
+        try { parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags; } catch { parsedTags = product.tags; }
+    }
+    let parsedVariants = product.variants;
+    if (variants) {
+        try { parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants; } catch { parsedVariants = product.variants; }
+    }
+
+    const updated = await Product.findByIdAndUpdate(
         id,
         {
             $set: {
-                name,
-                description,
-                price,
-                category,
-                stock
+                name: name ?? product.name,
+                description: description ?? product.description,
+                shortDescription: shortDescription ?? product.shortDescription,
+                price: price !== undefined ? Number(price) : product.price,
+                mrp: mrp !== undefined ? Number(mrp) : product.mrp,
+                manufacturingPrice: manufacturingPrice !== undefined ? Number(manufacturingPrice) : product.manufacturingPrice,
+                category: category ?? product.category,
+                subCategory: subCategory ?? product.subCategory,
+                stock: stock !== undefined ? Number(stock) : product.stock,
+                discount: discount !== undefined ? Number(discount) : product.discount,
+                discountType: discountType ?? product.discountType,
+                discountStartDate: discountStartDate || product.discountStartDate,
+                discountEndDate: discountEndDate || product.discountEndDate,
+                tax: tax ?? product.tax,
+                sku: sku ?? product.sku,
+                barcode: barcode ?? product.barcode,
+                tags: parsedTags,
+                minStock: minStock !== undefined ? Number(minStock) : product.minStock,
+                stockStatus: stockStatus ?? product.stockStatus,
+                trackStock: trackStock !== undefined ? (trackStock === 'true' || trackStock === true) : product.trackStock,
+                shippingWeight: shippingWeight ?? product.shippingWeight,
+                shippingLength: shippingLength ?? product.shippingLength,
+                shippingWidth: shippingWidth ?? product.shippingWidth,
+                shippingHeight: shippingHeight ?? product.shippingHeight,
+                productType: productType ?? product.productType,
+                variants: parsedVariants,
+                images: updatedImages,
             }
         },
         { new: true }
     );
 
-    if (!product) {
-        throw new ApiError(404, "Product not found");
-    }
-
-    return res.status(200).json(
-        new ApiResponse(200, product, "Product updated successfully")
-    );
+    return res.status(200).json(new ApiResponse(200, updated, "Product updated successfully"));
 });
+
 
 const deleteProduct = asyncHandler(async (req, res) => {
     const { id } = req.params;

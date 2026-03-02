@@ -24,7 +24,7 @@ router.route("/").post(
     createProduct
 );
 
-router.route("/:id").put(verifyJWT, verifyAdmin, updateProduct);
+router.route("/:id").put(verifyJWT, verifyAdmin, upload.array("images", 5), updateProduct);
 router.route("/:id").delete(verifyJWT, verifyAdmin, deleteProduct);
 
 export default router;
