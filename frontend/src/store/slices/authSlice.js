@@ -94,7 +94,10 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.isAuthenticated = true;
-                state.user = action.payload.user; // Depends on backend layout
+                state.user = action.payload.user;
+                if (action.payload.accessToken) {
+                    localStorage.setItem('accessToken', action.payload.accessToken);
+                }
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.status = 'failed';
@@ -126,6 +129,9 @@ const authSlice = createSlice({
                 state.status = 'succeeded';
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
+                if (action.payload.accessToken) {
+                    localStorage.setItem('accessToken', action.payload.accessToken);
+                }
             })
             .addCase(googleLogin.rejected, (state, action) => {
                 state.status = 'failed';
@@ -136,6 +142,7 @@ const authSlice = createSlice({
                 state.user = null;
                 state.isAuthenticated = false;
                 state.status = 'idle';
+                localStorage.removeItem('accessToken');
             })
             // Fetch Current User (Persistent Login)
             .addCase(fetchCurrentUser.pending, (state) => {

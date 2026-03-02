@@ -12,11 +12,11 @@ const api = axios.create({
 // Optionally, add an interceptor for handling 401s or adding Authorization headers if not using cookies
 api.interceptors.request.use(
     (config) => {
-        // If you store token in localStorage instead of a secure cookie:
-        // const token = localStorage.getItem('token');
-        // if (token) {
-        //   config.headers['Authorization'] = `Bearer ${token}`;
-        // }
+        // Send token as Authorization header (works cross-domain, unlike cookies)
+        const token = localStorage.getItem('accessToken');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => {
