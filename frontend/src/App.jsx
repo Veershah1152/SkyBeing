@@ -105,6 +105,16 @@ import AdminSettingsMaintenance from "./pages/admin/AdminSettingsMaintenance";
 import MaintenancePage from "./pages/MaintenancePage";
 import { useState } from "react";
 
+const MaintenanceGuard = ({ maintenanceMode, maintenanceMessage, user, children }) => {
+  const location = useLocation();
+
+  if (maintenanceMode && user?.role !== 'admin' && location.pathname !== '/login') {
+    return <MaintenancePage message={maintenanceMessage} />;
+  }
+
+  return children;
+};
+
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, status: authStatus, user } = useSelector((state) => state.auth);
@@ -122,6 +132,9 @@ function App() {
           setMaintenanceMode(res.data.data.isMaintenanceMode);
           setMaintenanceMessage(res.data.data.maintenanceMessage);
         }
+      })
+      .catch((err) => {
+        console.error("Failed to load maintenance settings:", err);
       })
       .finally(() => setIsCheckingMaintenance(false));
   }, [dispatch]);
@@ -183,9 +196,11 @@ function App() {
 
             {/* ── Public / Customer Routes ──────────────────────── */}
             <Route path="*" element={
-              (maintenanceMode && user?.role !== 'admin') ? (
-                <MaintenancePage message={maintenanceMessage} />
-              ) : (
+              <MaintenanceGuard
+                maintenanceMode={maintenanceMode}
+                maintenanceMessage={maintenanceMessage}
+                user={user}
+              >
                 <>
                   <Header />
                   <main className="flex-grow">
@@ -210,7 +225,7 @@ function App() {
                   </main>
                   <Footer />
                 </>
-              )
+              </MaintenanceGuard>
             } />
           </Routes>
         </div>

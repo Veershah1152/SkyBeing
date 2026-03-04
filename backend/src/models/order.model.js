@@ -63,6 +63,10 @@ const orderSchema = new Schema(
 
         // Self shipping
         isSelfShipped: { type: Boolean, default: false },
+
+        // Razorpay fields
+        razorpayOrderId: { type: String, default: null },
+        razorpayPaymentId: { type: String, default: null },
     },
     {
         timestamps: true

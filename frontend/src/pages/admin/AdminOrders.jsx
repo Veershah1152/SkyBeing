@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Search, Eye, Loader2, Package, FileText, X, User, MapPin, Phone, Mail, CreditCard, MessageSquare, ChevronRight, Truck } from 'lucide-react';
+import { ShoppingCart, Search, Eye, Loader2, Package, FileText, X, User, MapPin, Phone, Mail, CreditCard, MessageSquare, ChevronRight, Truck, Printer } from 'lucide-react';
 import api from '../../api/axios';
 import InvoiceModal from '../../components/admin/InvoiceModal';
+import PackingSlipModal from '../../components/admin/PackingSlipModal';
+import BulkPackingSlipModal from '../../components/admin/BulkPackingSlipModal';
+import BulkInvoiceModal from '../../components/admin/BulkInvoiceModal';
+import { DollarSign } from 'lucide-react';
 
 // ─── Order Details Modal ───────────────────────────────────────────────────
 const OrderDetailsModal = ({ order, onClose }) => {
@@ -53,6 +57,43 @@ const OrderDetailsModal = ({ order, onClose }) => {
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 capitalize">
                             Order: {order.orderStatus}
                         </span>
+
+                        {/* Razorpay Details */}
+                        {order.razorpayOrderId && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-blue-50 text-blue-600 border border-blue-100">
+                                rzp_order: {order.razorpayOrderId}
+                            </span>
+                        )}
+                        {order.razorpayPaymentId && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-green-50 text-green-600 border border-green-100">
+                                rzp_pay: {order.razorpayPaymentId}
+                            </span>
+                        )}
+
+                        {/* Money Check Button for Razorpay */}
+                        {order.paymentMethod === 'online' && (
+                            <button
+                                onClick={async (e) => {
+                                    const btn = e.currentTarget;
+                                    try {
+                                        btn.disabled = true;
+                                        btn.innerHTML = 'Verifying...';
+
+                                        const res = await api.get(`/payments/verify-money/${order._id}`);
+                                        alert(res.data.message);
+                                        window.location.reload();
+                                    } catch (err) {
+                                        console.error(err);
+                                        alert(err.response?.data?.message || 'Failed to verify payment from server record.');
+                                        btn.disabled = false;
+                                        btn.innerHTML = 'Money Cross Check';
+                                    }
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-skyGreen text-white hover:bg-green-700 transition shadow-sm"
+                            >
+                                <DollarSign className="w-3 h-3" /> Cross Check Payment
+                            </button>
+                        )}
                     </div>
 
                     {/* Customer Information */}
@@ -246,6 +287,11 @@ const AdminOrders = () => {
     const [selectedStatus, setSelectedStatus] = useState('');
     const [invoiceOrder, setInvoiceOrder] = useState(null);
     const [detailOrder, setDetailOrder] = useState(null);
+    const [packingSlipOrder, setPackingSlipOrder] = useState(null);
+    const [selectedOrderIds, setSelectedOrderIds] = useState([]);
+    const [bulkPackingOrders, setBulkPackingOrders] = useState(null);
+    const [bulkInvoiceOrders, setBulkInvoiceOrders] = useState(null);
+    const [isBulkShipping, setIsBulkShipping] = useState(false);
 
     const statusColors = {
         pending: 'bg-yellow-100 text-yellow-800',
@@ -288,6 +334,96 @@ const AdminOrders = () => {
         (order.customerPhone || '').includes(searchTerm)
     );
 
+    const toggleOrderSelection = (id) => {
+        setSelectedOrderIds(prev =>
+            prev.includes(id) ? prev.filter(oid => oid !== id) : [...prev, id]
+        );
+    };
+
+    const toggleAllSelection = () => {
+        if (selectedOrderIds.length === filteredOrders.length) {
+            setSelectedOrderIds([]);
+        } else {
+            setSelectedOrderIds(filteredOrders.map(o => o._id));
+        }
+    };
+
+    const handleBulkShiprocket = async () => {
+        if (!window.confirm(`Are you sure you want to dispatch ${selectedOrderIds.length} orders to Shiprocket?`)) return;
+
+        setIsBulkShipping(true);
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const id of selectedOrderIds) {
+            try {
+                await api.post(`/shiprocket/create/${id}`);
+                successCount++;
+            } catch (err) {
+                console.error(`Failed to ship order ${id}:`, err);
+                failCount++;
+            }
+        }
+
+        setIsBulkShipping(false);
+        alert(`Bulk Dispatch Complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+        setSelectedOrderIds([]);
+        fetchOrders();
+    };
+
+    const handleBulkSelfShip = async () => {
+        if (!window.confirm(`Are you sure you want to mark ${selectedOrderIds.length} orders as manually shipped?`)) return;
+
+        setIsBulkShipping(true);
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const id of selectedOrderIds) {
+            try {
+                await api.put(`/admin/orders/${id}/self-ship`);
+                successCount++;
+            } catch (err) {
+                console.error(`Failed to self-ship order ${id}:`, err);
+                failCount++;
+            }
+        }
+
+        setIsBulkShipping(false);
+        alert(`Bulk Manual Shipping Complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+        setSelectedOrderIds([]);
+        fetchOrders();
+    };
+
+    const handleBulkMoneyCheck = async () => {
+        const onlineOrders = orders.filter(o => selectedOrderIds.includes(o._id) && o.paymentMethod === 'online');
+
+        if (onlineOrders.length === 0) {
+            alert("No online payment orders selected to cross-check.");
+            return;
+        }
+
+        if (!window.confirm(`Cross-check payment status for ${onlineOrders.length} online orders with Razorpay?`)) return;
+
+        setIsBulkShipping(true);
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const order of onlineOrders) {
+            try {
+                await api.get(`/payments/verify-money/${order._id}`);
+                successCount++;
+            } catch (err) {
+                console.error(`Failed to verify order ${order._id}:`, err);
+                failCount++;
+            }
+        }
+
+        setIsBulkShipping(false);
+        alert(`Bulk Money Check Complete!\nSuccessfully Verified: ${successCount}\nNo Payment Found / Failed: ${failCount}`);
+        setSelectedOrderIds([]);
+        fetchOrders();
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
@@ -296,7 +432,7 @@ const AdminOrders = () => {
                     <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
                         Orders <span className="text-gray-400 text-lg font-normal mb-1 ml-2">({orders.length})</span>
                     </h1>
-                    <p className="mt-1 text-sm text-gray-500">Showing only confirmed orders (COD &amp; paid online).</p>
+                    <p className="mt-1 text-sm text-gray-500">Showing confirmed orders only (COD &amp; paid online).</p>
                 </div>
             </div>
 
@@ -332,14 +468,21 @@ const AdminOrders = () => {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
+                                <th className="px-6 py-4 w-10">
+                                    <input
+                                        type="checkbox"
+                                        checked={filteredOrders.length > 0 && selectedOrderIds.length === filteredOrders.length}
+                                        onChange={toggleAllSelection}
+                                        className="w-4 h-4 rounded border-gray-300 text-skyGreen focus:ring-skyGreen"
+                                    />
+                                </th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order ID</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Details</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Invoice</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -357,7 +500,16 @@ const AdminOrders = () => {
                                 </tr>
                             ) : (
                                 filteredOrders.map((order) => (
-                                    <tr key={order._id} className="hover:bg-green-50/30 transition-colors group">
+                                    <tr key={order._id} className={`hover:bg-green-50/30 transition-colors group ${selectedOrderIds.includes(order._id) ? 'bg-green-50/50' : ''}`}>
+                                        {/* Checkbox */}
+                                        <td className="px-6 py-4">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedOrderIds.includes(order._id)}
+                                                onChange={() => toggleOrderSelection(order._id)}
+                                                className="w-4 h-4 rounded border-gray-300 text-skyGreen focus:ring-skyGreen"
+                                            />
+                                        </td>
                                         {/* Order ID */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
@@ -413,26 +565,56 @@ const AdminOrders = () => {
                                             </select>
                                         </td>
 
-                                        {/* Details Button */}
+                                        {/* Action Buttons */}
                                         <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => setDetailOrder(order)}
-                                                className="p-2 bg-gray-100 hover:bg-skyGreen hover:text-white rounded-lg transition-colors text-gray-600 flex items-center justify-center m-auto"
-                                                title="View Order Details"
-                                            >
-                                                <Eye className="w-5 h-5" />
-                                            </button>
-                                        </td>
+                                            <div className="flex items-center justify-center gap-2">
+                                                <button
+                                                    onClick={() => setDetailOrder(order)}
+                                                    className="p-2 bg-gray-100 hover:bg-skyGreen hover:text-white rounded-lg transition-colors text-gray-600"
+                                                    title="View Details"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => setPackingSlipOrder(order)}
+                                                    className="p-2 bg-gray-100 hover:bg-skyGreen hover:text-white rounded-lg transition-colors text-gray-600"
+                                                    title="Packing Slip"
+                                                >
+                                                    <Printer className="w-4 h-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => setInvoiceOrder(order)}
+                                                    className="p-2 bg-gray-100 hover:bg-skyGreen hover:text-white rounded-lg transition-colors text-gray-600"
+                                                    title="Invoice"
+                                                >
+                                                    <FileText className="w-4 h-4" />
+                                                </button>
+                                                {order.paymentMethod === 'online' && (
+                                                    <button
+                                                        onClick={async (e) => {
+                                                            const btn = e.currentTarget;
+                                                            try {
+                                                                const originalContent = btn.innerHTML;
+                                                                btn.disabled = true;
+                                                                btn.innerHTML = '<span class="w-4 h-4 animate-spin block border-2 border-skyGreen border-t-transparent rounded-full mx-auto"></span>';
 
-                                        {/* Invoice Button */}
-                                        <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => setInvoiceOrder(order)}
-                                                className="p-2 bg-gray-100 hover:bg-skyGreen hover:text-white rounded-lg transition-colors text-gray-600 flex items-center justify-center m-auto"
-                                                title="View Invoice"
-                                            >
-                                                <FileText className="w-5 h-5" />
-                                            </button>
+                                                                const res = await api.get(`/payments/verify-money/${order._id}`);
+                                                                alert(res.data.message);
+                                                                window.location.reload();
+                                                            } catch (err) {
+                                                                console.error(err);
+                                                                alert(err.response?.data?.message || 'Verification failed');
+                                                                btn.disabled = false;
+                                                                btn.innerHTML = '<DollarSign className="w-4 h-4" />';
+                                                            }
+                                                        }}
+                                                        className="p-2 bg-yellow-50 hover:bg-yellow-500 hover:text-white rounded-lg transition-colors text-yellow-600"
+                                                        title="Cross Check payment with Razorpay Webhook/API"
+                                                    >
+                                                        <DollarSign className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -455,6 +637,96 @@ const AdminOrders = () => {
                 <InvoiceModal
                     order={invoiceOrder}
                     onClose={() => setInvoiceOrder(null)}
+                />
+            )}
+            {/* Packing Slip Modal */}
+            {packingSlipOrder && (
+                <PackingSlipModal
+                    order={packingSlipOrder}
+                    onClose={() => setPackingSlipOrder(null)}
+                />
+            )}
+
+            {/* Bulk Action Bar */}
+            {selectedOrderIds.length > 0 && (
+                <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 border border-white/10 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 z-[100] animate-in fade-in slide-in-from-bottom-8 duration-300">
+                    <div className="flex items-center gap-3 pr-6 border-r border-white/10">
+                        <div className="bg-skyGreen rounded-lg p-1.5 ring-4 ring-skyGreen/20">
+                            <Package className="w-5 h-5 text-gray-900" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold">{selectedOrderIds.length} orders selected</p>
+                            <button
+                                onClick={() => setSelectedOrderIds([])}
+                                className="text-xs text-gray-400 hover:text-white transition-colors"
+                            >
+                                Deselect all
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <button
+                            disabled={isBulkShipping}
+                            onClick={() => {
+                                const bulkOrders = orders.filter(o => selectedOrderIds.includes(o._id));
+                                setBulkPackingOrders(bulkOrders);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-xl transition-all text-sm font-semibold"
+                        >
+                            <Printer className="w-4 h-4" /> Bulk Slips
+                        </button>
+                        <button
+                            disabled={isBulkShipping}
+                            onClick={() => {
+                                const bulkOrders = orders.filter(o => selectedOrderIds.includes(o._id));
+                                setBulkInvoiceOrders(bulkOrders);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-white/10 rounded-xl transition-all text-sm font-semibold"
+                        >
+                            <FileText className="w-4 h-4" /> Bulk Invoices
+                        </button>
+                        <button
+                            onClick={handleBulkMoneyCheck}
+                            disabled={isBulkShipping}
+                            className={`flex items-center gap-2 px-5 py-2.5 bg-yellow-600 hover:bg-yellow-500 rounded-xl transition-all text-sm font-bold shadow-lg shadow-yellow-500/20 ${isBulkShipping ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <DollarSign className="w-4 h-4" /> Bulk Money Check
+                        </button>
+                        <button
+                            onClick={handleBulkSelfShip}
+                            disabled={isBulkShipping}
+                            className={`flex items-center gap-2 px-5 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-xl transition-all text-sm font-bold shadow-lg shadow-gray-500/20 ${isBulkShipping ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            <Package className="w-4 h-4" /> Bulk Self-Ship
+                        </button>
+                        <button
+                            onClick={handleBulkShiprocket}
+                            disabled={isBulkShipping}
+                            className={`flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all text-sm font-bold shadow-lg shadow-blue-500/20 ${isBulkShipping ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {isBulkShipping ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Truck className="w-4 h-4" />
+                            )}
+                            Bulk Shiprocket
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Bulk Action Modals */}
+            {bulkPackingOrders && (
+                <BulkPackingSlipModal
+                    orders={bulkPackingOrders}
+                    onClose={() => setBulkPackingOrders(null)}
+                />
+            )}
+            {bulkInvoiceOrders && (
+                <BulkInvoiceModal
+                    orders={bulkInvoiceOrders}
+                    onClose={() => setBulkInvoiceOrders(null)}
                 />
             )}
         </div>

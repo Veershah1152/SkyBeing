@@ -4,11 +4,20 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import { Order } from "../models/order.model.js";
+import { SiteSettings } from "../models/settings.model.js";
 
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_123',
-    key_secret: process.env.RAZORPAY_KEY_SECRET || 'secret123',
-});
+const getRazorpayInstance = async () => {
+    const settings = await SiteSettings.findOne();
+
+    const keyId = settings?.razorpayKey || process.env.RAZORPAY_KEY_ID;
+    const keySecret = settings?.razorpaySecret || process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+        throw new ApiError(500, "Razorpay credentials not configured. Set them in Admin Settings or .env (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET)");
+    }
+
+    return new Razorpay({ key_id: keyId, key_secret: keySecret });
+};
 
 const createRazorpayOrder = asyncHandler(async (req, res) => {
     const { orderId } = req.body;
@@ -34,18 +43,26 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
         }
     };
 
-    const rzpOrder = await razorpay.orders.create(options);
+    const rzp = await getRazorpayInstance();
+    const rzpOrder = await rzp.orders.create(options);
 
     if (!rzpOrder) {
         throw new ApiError(500, "Failed to create Razorpay order");
     }
+
+    // Save razorpayOrderId to keep track
+    order.razorpayOrderId = rzpOrder.id;
+    await order.save();
+
+    const settings = await SiteSettings.findOne();
+    const keyId = settings?.razorpayKey || process.env.RAZORPAY_KEY_ID;
 
     return res.status(200).json(
         new ApiResponse(200, {
             id: rzpOrder.id,
             currency: rzpOrder.currency,
             amount: rzpOrder.amount,
-            key_id: process.env.RAZORPAY_KEY_ID
+            key_id: keyId
         }, "Razorpay order created successfully")
     );
 });
@@ -53,18 +70,24 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
 const verifyRazorpayPayment = asyncHandler(async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = req.body;
 
+    const settings = await SiteSettings.findOne();
+    const razorpaySecret = settings?.razorpaySecret || process.env.RAZORPAY_KEY_SECRET;
+    if (!razorpaySecret) {
+        throw new ApiError(500, "Razorpay secret not configured");
+    }
+
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || 'secret123')
+        .createHmac("sha256", razorpaySecret)
         .update(sign.toString())
         .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-        // Payment is verified
         const order = await Order.findById(orderId);
         if (order) {
             order.paymentStatus = 'completed';
-            order.isConfirmed = true; // Mark as confirmed only after successful payment
+            order.isConfirmed = true;
+            order.razorpayPaymentId = razorpay_payment_id;
             await order.save();
         }
 
@@ -75,8 +98,8 @@ const verifyRazorpayPayment = asyncHandler(async (req, res) => {
 });
 
 const razorpayWebhook = asyncHandler(async (req, res) => {
-    // Razorpay sends webhook payload in req.body
-    const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const settings = await SiteSettings.findOne();
+    const secret = settings?.razorpayWebhookSecret;
 
     if (!secret) {
         console.error("Webhook secret is not defined");
@@ -92,7 +115,6 @@ const razorpayWebhook = asyncHandler(async (req, res) => {
         const payload = req.body.payload;
 
         try {
-            // We can get the original orderId from the notes we sent during creation
             let orderId = null;
 
             if (payload.payment && payload.payment.entity && payload.payment.entity.notes) {
@@ -108,6 +130,9 @@ const razorpayWebhook = asyncHandler(async (req, res) => {
                     if (event === "payment.captured" || event === "order.paid") {
                         order.paymentStatus = 'completed';
                         order.isConfirmed = true;
+                        if (payload.payment?.entity?.id) {
+                            order.razorpayPaymentId = payload.payment.entity.id;
+                        }
                         await order.save();
                     } else if (event === "payment.failed") {
                         order.paymentStatus = 'failed';
@@ -124,6 +149,95 @@ const razorpayWebhook = asyncHandler(async (req, res) => {
     } else {
         return res.status(400).json({ status: "error", message: "Invalid Signature" });
     }
+});
+
+// ── Admin: Manual money check against Razorpay ────────────────────────────────
+export const verifyRazorpayPaymentManually = asyncHandler(async (req, res) => {
+    const { orderId } = req.params;
+
+    const order = await Order.findById(orderId);
+    if (!order) throw new ApiError(404, "Order not found");
+
+    if (order.paymentMethod !== 'online') {
+        throw new ApiError(400, "Money check only applicable for online/Razorpay payments.");
+    }
+
+    // Get Razorpay instance (will throw 500 if credentials missing)
+    const rzp = await getRazorpayInstance();
+
+    let rzpOrderId = order.razorpayOrderId;
+
+    // ── Step 1: If no razorpayOrderId stored yet, search Razorpay by receipt ──
+    if (!rzpOrderId) {
+        const receipt = `receipt_order_${orderId}`;
+        console.log(`[MoneyCheck] No rzpOrderId on DB order ${orderId}, searching Razorpay by receipt: ${receipt}`);
+
+        let rzpOrders;
+        try {
+            // Fetch last 100 Razorpay orders and match by receipt
+            rzpOrders = await rzp.orders.all({ count: 100 });
+        } catch (fetchErr) {
+            console.error("[MoneyCheck] Failed to list orders from Razorpay:", fetchErr.message || fetchErr);
+            return res.status(200).json(new ApiResponse(200, {
+                paymentStatus: order.paymentStatus,
+            }, "Could not reach Razorpay servers. Please check Razorpay API credentials in Settings."));
+        }
+
+        const matchedOrder = rzpOrders?.items?.find(o => o.receipt === receipt);
+
+        if (!matchedOrder) {
+            return res.status(200).json(new ApiResponse(200, {
+                paymentStatus: order.paymentStatus,
+            }, "No Razorpay order found for this DB order. Customer likely did not open the payment page yet."));
+        }
+
+        // Save found Razorpay Order ID for future lookups
+        rzpOrderId = matchedOrder.id;
+        order.razorpayOrderId = rzpOrderId;
+        await order.save();
+        console.log(`[MoneyCheck] Found & linked rzpOrderId: ${rzpOrderId} to order ${orderId}`);
+    }
+
+    // ── Step 2: Fetch all payments made against this Razorpay order ──
+    let rzpPayments;
+    try {
+        rzpPayments = await rzp.orders.fetchPayments(rzpOrderId);
+    } catch (fetchErr) {
+        console.error("[MoneyCheck] Failed to fetchPayments from Razorpay:", fetchErr.message || fetchErr);
+        return res.status(200).json(new ApiResponse(200, {
+            paymentStatus: order.paymentStatus,
+        }, `Could not fetch payments from Razorpay for Razorpay order ${rzpOrderId}. Check credentials.`));
+    }
+
+    // ── Step 3: Check for a successful (captured) payment ──
+    const successfulPayment = rzpPayments?.items?.find(p => p.status === 'captured');
+
+    if (successfulPayment) {
+        order.paymentStatus = 'completed';
+        order.isConfirmed = true;
+        order.razorpayPaymentId = successfulPayment.id;
+        await order.save();
+        console.log(`[MoneyCheck] ✅ Payment verified for order ${orderId}: paymentId=${successfulPayment.id}`);
+
+        return res.status(200).json(new ApiResponse(200, {
+            paymentStatus: 'completed',
+            paymentId: successfulPayment.id,
+            amount: successfulPayment.amount / 100
+        }, "✅ Money Verified! Payment was successful. Order is now confirmed."));
+    }
+
+    if (!rzpPayments?.items?.length) {
+        return res.status(200).json(new ApiResponse(200, {
+            paymentStatus: order.paymentStatus,
+        }, "No payment attempts found in Razorpay for this order. Customer has not paid yet."));
+    }
+
+    const latestPayment = rzpPayments.items[0];
+    console.log(`[MoneyCheck] Latest payment for ${orderId}: status=${latestPayment.status}, id=${latestPayment.id}`);
+    return res.status(200).json(new ApiResponse(200, {
+        paymentStatus: latestPayment.status,
+        paymentId: latestPayment.id
+    }, `Money Check: Latest payment status is '${latestPayment.status}'. No successful capture yet.`));
 });
 
 export {

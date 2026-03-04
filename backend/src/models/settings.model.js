@@ -9,6 +9,18 @@ const settingsSchema = new Schema(
         maintenanceMessage: {
             type: String,
             default: "We are currently upgrading our store. We will be back soon!"
+        },
+        razorpayKey: {
+            type: String,
+            default: ""
+        },
+        razorpaySecret: {
+            type: String,
+            default: ""
+        },
+        razorpayWebhookSecret: {
+            type: String,
+            default: ""
         }
     },
     {

@@ -24,7 +24,7 @@ export const getMaintenanceStatus = asyncHandler(async (req, res) => {
 
 // Admin ONLY route to update maintenance settings
 export const updateMaintenanceSettings = asyncHandler(async (req, res) => {
-    const { isMaintenanceMode, maintenanceMessage } = req.body;
+    const { isMaintenanceMode, maintenanceMessage, razorpayKey, razorpaySecret, razorpayWebhookSecret } = req.body;
 
     let settings = await getOrCreateSettings();
 
@@ -33,6 +33,15 @@ export const updateMaintenanceSettings = asyncHandler(async (req, res) => {
     }
     if (typeof maintenanceMessage !== 'undefined') {
         settings.maintenanceMessage = maintenanceMessage;
+    }
+    if (typeof razorpayKey !== 'undefined') {
+        settings.razorpayKey = razorpayKey;
+    }
+    if (typeof razorpaySecret !== 'undefined') {
+        settings.razorpaySecret = razorpaySecret;
+    }
+    if (typeof razorpayWebhookSecret !== 'undefined') {
+        settings.razorpayWebhookSecret = razorpayWebhookSecret;
     }
 
     await settings.save();

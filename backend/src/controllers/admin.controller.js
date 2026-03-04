@@ -273,8 +273,11 @@ export const adminDeleteProduct = asyncHandler(async (req, res) => {
 export const adminGetOrders = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, status, startDate, endDate } = req.query;
 
-    // Only show confirmed orders (COD = confirmed on placement, online = confirmed after payment)
-    let query = { isConfirmed: true };
+    // Only show confirmed orders. Never show failed payment orders.
+    let query = {
+        isConfirmed: true,
+        paymentStatus: { $ne: 'failed' }
+    };
     if (status) query.orderStatus = status;
     if (startDate && endDate) {
         query.createdAt = {

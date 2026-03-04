@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { X, Download, Loader2 } from 'lucide-react';
+import { X, Download, Loader2, Printer } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 import JsBarcode from 'jsbarcode';
@@ -79,6 +79,13 @@ const InvoiceModal = ({ order, onClose }) => {
                     <h2 className="text-xl font-bold">Invoice Preview</h2>
                     <div className="flex gap-4">
                         <button
+                            onClick={() => window.print()}
+                            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                        >
+                            <Printer className="w-4 h-4" />
+                            Print
+                        </button>
+                        <button
                             onClick={handleDownload}
                             disabled={isDownloading}
                             className={`flex items-center gap-2 px-4 py-2 ${isDownloading ? 'bg-gray-400' : 'bg-skyGreen'} text-white rounded-lg hover:bg-opacity-90 transition`}
@@ -96,7 +103,7 @@ const InvoiceModal = ({ order, onClose }) => {
                     {/* A4 sized container for accurate rendering layout */}
                     <div
                         ref={invoiceRef}
-                        className="bg-white"
+                        className="bg-white invoice-print-area"
                         style={{
                             width: '210mm',
                             minHeight: '297mm',
@@ -204,18 +211,8 @@ const InvoiceModal = ({ order, onClose }) => {
                             {/* Totals Section */}
                             <div className="flex justify-end mt-12 w-full">
                                 <div className="w-[300px]">
-                                    <div className="bg-[#f5f5f5] p-6 flex justify-between tracking-wide">
-                                        <span className="font-bold text-sm uppercase">SUB-TOTAL</span>
-                                        <span className="font-bold text-sm">₹{subTotal.toFixed(2)}</span>
-                                    </div>
-                                    {(order.totalAmount || 0) > subTotal && (
-                                        <div className="bg-[#f5f5f5] px-6 pb-6 flex justify-between tracking-wide">
-                                            <span className="font-bold text-sm uppercase text-gray-500">SHIPPING</span>
-                                            <span className="font-bold text-sm text-gray-500">₹{(order.totalAmount - subTotal).toFixed(2)}</span>
-                                        </div>
-                                    )}
                                     <div className="bg-[#9cb73b] p-6 flex justify-between mt-2 tracking-wide font-bold">
-                                        <span className="text-base text-gray-800">TOTAL DUE</span>
+                                        <span className="text-base text-gray-800">TOTAL</span>
                                         <span className="text-base text-gray-800">₹{order.totalAmount?.toFixed(2) || subTotal.toFixed(2)}</span>
                                     </div>
                                     <div className="mt-4 flex justify-end">
@@ -241,6 +238,29 @@ const InvoiceModal = ({ order, onClose }) => {
                     </div>
                 </div>
             </div>
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @media print {
+                    @page { margin: 0; size: auto; }
+                    body { margin: 0; background: white !important; }
+                    body * { visibility: hidden !important; }
+                    .invoice-print-area, .invoice-print-area * { visibility: visible !important; }
+                    .invoice-print-area {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 210mm !important;
+                        min-height: 297mm !important;
+                        background: white !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        box-shadow: none !important;
+                    }
+                    /* Ensure totals and colors are preserved */
+                    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                }
+            ` }} />
         </div>
     );
 };
