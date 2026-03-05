@@ -375,12 +375,12 @@ const Shop = () => {
 
                                     < div className="flex items-center justify-between w-full mt-auto" >
                                         <span className="text-[#3A3A3A] font-extrabold text-xl">
-                                            ₹{prod.price?.toLocaleString('en-IN')}
+                                            ₹{Math.round(prod.price)?.toLocaleString('en-IN')}
                                         </span>
                                         {
                                             prod.mrp > 0 && prod.mrp > prod.price && (
                                                 <span className="text-sm text-gray-400 line-through">
-                                                    ₹{prod.mrp?.toLocaleString('en-IN')}
+                                                    ₹{Math.round(prod.mrp)?.toLocaleString('en-IN')}
                                                 </span>
                                             )
                                         }

@@ -58,7 +58,7 @@ const Cart = () => {
 
                                             {/* Mobile only price & qty */}
                                             <div className="md:hidden flex items-center justify-between mt-2">
-                                                <span className="text-skyGreen font-bold">₹{item.product.price}</span>
+                                                <span className="text-skyGreen font-bold">₹{Math.round(item.product.price).toLocaleString('en-IN')}</span>
                                                 <div className="flex items-center border border-[#9F9F9F] rounded w-20 bg-white">
                                                     <button onClick={() => dispatch(updateCartQuantity({ productId: item.product._id, quantity: Math.max(1, item.quantity - 1) }))} className="flex-1 text-center py-0.5">-</button>
                                                     <span className="flex-1 text-center font-semibold">{item.quantity}</span>
@@ -70,7 +70,7 @@ const Cart = () => {
 
                                     {/* Desktop only columns */}
                                     <div className="hidden md:block flex-1 text-center text-[#9F9F9F] font-medium">
-                                        ₹{item.product.price}
+                                        ₹{Math.round(item.product.price).toLocaleString('en-IN')}
                                     </div>
                                     <div className="hidden md:flex flex-1 justify-center text-black font-medium">
                                         <div className="flex items-center border border-[#9F9F9F] rounded w-20">
@@ -84,7 +84,7 @@ const Cart = () => {
                                     <div className="flex-1 text-right flex items-center justify-between md:justify-end gap-6 text-black font-medium w-full md:w-auto mt-2 md:mt-0 pt-4 md:pt-0 border-t md:border-0 border-gray-50">
                                         <span className="md:hidden text-sm text-gray-400">Subtotal:</span>
                                         <div className="flex items-center gap-6">
-                                            <span className="font-bold md:font-medium">₹{(item.product.price * item.quantity).toLocaleString('en-IN')}</span>
+                                            <span className="font-bold md:font-medium">₹{Math.round(item.product.price * item.quantity).toLocaleString('en-IN')}</span>
                                             <Trash
                                                 onClick={() => dispatch(removeFromCart(item.product._id))}
                                                 className="w-5 h-5 text-red-400 cursor-pointer hover:text-red-600 transition"
@@ -103,11 +103,11 @@ const Cart = () => {
 
                             <div className="w-full flex justify-between text-black font-semibold mb-6">
                                 <span>Subtotal</span>
-                                <span className="text-[#9F9F9F]">Rs. {totalAmount.toFixed(2)}</span>
+                                <span className="text-[#9F9F9F]">Rs. {Math.round(totalAmount).toLocaleString('en-IN')}</span>
                             </div>
                             <div className="w-full flex justify-between items-center text-black font-semibold mb-12">
                                 <span>Total</span>
-                                <span className="text-xl text-[#B88E2F] font-medium">Rs. {totalAmount.toFixed(2)}</span>
+                                <span className="text-xl text-[#B88E2F] font-medium">Rs. {Math.round(totalAmount).toLocaleString('en-IN')}</span>
                             </div>
 
                             {items.length > 0 ? (

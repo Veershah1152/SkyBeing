@@ -173,7 +173,7 @@ const OrderDetailsModal = ({ order, onClose }) => {
                                             <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
                                         </div>
                                         <div className="text-sm font-bold text-gray-900 shrink-0">
-                                            ₹{((product?.price || 0) * item.quantity).toLocaleString('en-IN')}
+                                            ₹{Math.round((product?.price || 0) * item.quantity).toLocaleString('en-IN')}
                                         </div>
                                     </div>
                                 );
@@ -271,7 +271,7 @@ const OrderDetailsModal = ({ order, onClose }) => {
                     {/* Total */}
                     <div className="flex justify-between items-center bg-gray-900 text-white rounded-xl px-5 py-4">
                         <span className="font-semibold text-sm">Order Total</span>
-                        <span className="font-bold text-lg">₹{order.totalAmount?.toLocaleString('en-IN')}</span>
+                        <span className="font-bold text-lg">₹{Math.round(order.totalAmount)?.toLocaleString('en-IN')}</span>
                     </div>
                 </div>
             </div>
@@ -547,7 +547,7 @@ const AdminOrders = () => {
 
                                         {/* Total */}
                                         <td className="px-6 py-4 font-semibold text-gray-900">
-                                            ₹{order.totalAmount?.toLocaleString('en-IN')}
+                                            ₹{Math.round(order.totalAmount)?.toLocaleString('en-IN')}
                                         </td>
 
                                         {/* Status Dropdown */}

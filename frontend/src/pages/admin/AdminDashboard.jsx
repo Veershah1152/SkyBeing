@@ -293,7 +293,7 @@ const AdminDashboard = () => {
                                             {order.userId?.name || order.shippingAddress?.street?.split(',')[0] || 'Guest'}
                                         </td>
                                         <td className="px-6 py-3.5 text-sm font-bold text-gray-900 whitespace-nowrap">
-                                            ₹{order.totalAmount?.toLocaleString('en-IN')}
+                                            ₹{Math.round(order.totalAmount)?.toLocaleString('en-IN')}
                                         </td>
                                         <td className="px-6 py-3.5 text-sm whitespace-nowrap">
                                             {order.paymentStatus === 'completed'
@@ -348,7 +348,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-semibold text-gray-800 truncate">{p.name}</p>
-                                            <p className="text-xs text-gray-400">₹{p.price?.toLocaleString('en-IN')}</p>
+                                            <p className="text-xs text-gray-400">₹{Math.round(p.price)?.toLocaleString('en-IN')}</p>
                                         </div>
                                         <span className="text-xs font-bold bg-skyGreen/10 text-skyGreen px-2.5 py-1 rounded-full whitespace-nowrap">
                                             {p.totalSold} sold

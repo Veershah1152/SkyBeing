@@ -169,7 +169,7 @@ const ProductDetails = () => {
                     {/* Details */}
                     <div className="w-full lg:w-1/2 pt-4 flex flex-col">
                         <h1 className="text-3xl md:text-4xl text-black font-semibold mb-2">{product.name}</h1>
-                        <p className="text-xl md:text-2xl text-[#9F9F9F] font-semibold mb-4">Rs. {product.price?.toLocaleString('en-IN')}</p>
+                        <p className="text-xl md:text-2xl text-[#9F9F9F] font-semibold mb-4">Rs. {Math.round(product.price)?.toLocaleString('en-IN')}</p>
 
                         <div className="flex flex-wrap items-center gap-4 mb-4">
                             <div className="flex text-[#FFC700]">
@@ -417,7 +417,7 @@ const ProductDetails = () => {
                                 <div className="px-4 w-full">
                                     <h3 className="text-lg font-bold text-[#3A3A3A] mb-1 truncate group-hover:text-skyGreen transition">{relProd.name}</h3>
                                     <p className="text-sm text-[#898989] mb-2 font-medium truncate">{relProd.category}</p>
-                                    <p className="text-lg font-bold text-[#3A3A3A]">Rs. {relProd.price?.toLocaleString('en-IN')}</p>
+                                    <p className="text-lg font-bold text-[#3A3A3A]">Rs. {Math.round(relProd.price)?.toLocaleString('en-IN')}</p>
                                 </div>
                             </Link>
                         ))}

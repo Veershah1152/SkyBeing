@@ -101,7 +101,7 @@ const Wishlist = () => {
                                         </Link>
                                         <p className="text-xs text-gray-400 font-medium mb-3">{product.category || 'Product'}</p>
                                         <p className="text-skyGreen font-extrabold text-lg mb-4">
-                                            ₹ {product.price?.toLocaleString('en-IN')}
+                                            ₹ {Math.round(product.price)?.toLocaleString('en-IN')}
                                         </p>
 
                                         <div className="flex gap-2 mt-auto">

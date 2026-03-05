@@ -259,7 +259,7 @@ const Home = () => {
                                     {prod.name}
                                 </div>
                                 <p className="text-xs text-[#898989] font-medium mb-2">{prod.category || 'Feeder'}</p>
-                                <span className="text-skyGreen font-extrabold text-sm">₹ {prod.price?.toLocaleString('en-IN')}</span>
+                                <span className="text-skyGreen font-extrabold text-sm">₹ {Math.round(prod.price)?.toLocaleString('en-IN')}</span>
                             </div>
                         </div>
                     )) : (

@@ -31,7 +31,7 @@ const Checkout = () => {
         }
     }, [status, dispatch]);
 
-    const formattedTotal = totalAmount ? totalAmount.toLocaleString('en-IN') : '0';
+    const formattedTotal = totalAmount ? Math.round(totalAmount).toLocaleString('en-IN') : '0';
 
     const handlePlaceOrder = async (e) => {
         e.preventDefault();
@@ -375,7 +375,7 @@ const Checkout = () => {
                                                 </div>
                                             </div>
                                             <div className="font-bold text-black text-[13px] pt-1 shrink-0">
-                                                ₹{((item.product?.price || 0) * item.quantity).toLocaleString('en-IN')}
+                                                ₹{Math.round((item.product?.price || 0) * item.quantity).toLocaleString('en-IN')}
                                             </div>
                                         </div>
                                     ))}

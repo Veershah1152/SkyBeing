@@ -42,7 +42,7 @@ const ProductCard = ({ product }) => {
                 </Link>
 
                 <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
-                    <span className="text-xl font-extrabold text-gray-900">₹{product.price}</span>
+                    <span className="text-xl font-extrabold text-gray-900">₹{Math.round(product.price).toLocaleString('en-IN')}</span>
                     <button
                         onClick={handleAddToCart}
                         className="bg-skyGreen/10 text-skyGreen hover:bg-skyGreen hover:text-white p-2 md:px-4 rounded-lg flex items-center gap-2 transition-colors font-semibold"
