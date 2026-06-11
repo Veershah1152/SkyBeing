@@ -13,7 +13,7 @@ const PackingSlipModal = ({ order, onClose }) => {
         address1: "6624/6, CHINCHKHED ROAD, BRAMHAA VALLEY SCHOOL",
         address2: "SAMBHAJI NAGAR, PIMPALGAON BASWANT",
         address3: "NASHIK, MAHARASHTRA-422209",
-        phone: "+91 9370228555"
+        phone: "+91 83292 45729"
     };
 
     return (

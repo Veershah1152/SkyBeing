@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, User, LogOut, Settings, Heart, X, Menu } from 'lucide-react';
+import { Search, ShoppingBag, User, LogOut, Settings, Heart, X, Menu, ChevronDown } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../../store/slices/authSlice';
 import { selectWishlistCount } from '../../store/slices/wishlistSlice';
@@ -16,6 +16,8 @@ const Header = () => {
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [shopDropOpen, setShopDropOpen] = useState(false);
+    const [mobileShopOpen, setMobileShopOpen] = useState(false);
     const searchInputRef = useRef(null);
 
     // Focus input when search opens
@@ -74,10 +76,78 @@ const Header = () => {
                         </div>
 
                         {/* Left Navigation (Desktop) */}
-                        <nav className="hidden md:flex space-x-8 flex-1">
+                        <nav className="hidden md:flex items-center space-x-8 flex-1">
                             <Link to="/" className="text-sm font-semibold text-gray-700 hover:text-skyGreen transition-colors tracking-wide">Home</Link>
-                            <Link to="/shop" className="text-sm font-semibold text-gray-700 hover:text-skyGreen transition-colors tracking-wide">Shop</Link>
+
+                            {/* Shop Mega-Dropdown */}
+                            <div
+                                className="relative"
+                                onMouseEnter={() => setShopDropOpen(true)}
+                                onMouseLeave={() => setShopDropOpen(false)}
+                            >
+                                <button className="flex items-center gap-1 text-sm font-semibold text-gray-700 hover:text-skyGreen transition-colors tracking-wide">
+                                    Shop <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${shopDropOpen ? 'rotate-180 text-skyGreen' : ''}`} />
+                                </button>
+
+                                {shopDropOpen && (
+                                    <div className="absolute left-0 top-full pt-3 z-50">
+                                        <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 w-[560px] grid grid-cols-2 gap-x-8 gap-y-1">
+
+                                            {/* Col 1: Bird Feeders & Water */}
+                                            <div>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Bird Feeders</p>
+                                                <Link to="/collections/bird-feeders" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">🪺</span> All Bird Feeders
+                                                </Link>
+                                                <Link to="/collections/hanging-bird-feeders" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">🔗</span> Hanging Feeders
+                                                </Link>
+                                                <Link to="/collections/window-bird-feeders" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">🪟</span> Window Feeders
+                                                </Link>
+
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 mt-5">Bird Watering</p>
+                                                <Link to="/collections/water-feeders" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">💧</span> Water Feeders
+                                                </Link>
+                                            </div>
+
+                                            {/* Col 2: Bird Homes & More */}
+                                            <div>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Bird Homes</p>
+                                                <Link to="/collections/bird-houses" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">🏠</span> Bird Houses
+                                                </Link>
+
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 mt-5">More</p>
+                                                <Link to="/collections/best-sellers" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">⭐</span> Best Sellers
+                                                </Link>
+                                                <Link to="/collections/accessories" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">🎒</span> Accessories
+                                                </Link>
+                                                <Link to="/shop" onClick={() => setShopDropOpen(false)} className="flex items-center gap-2 py-2 text-sm text-gray-700 hover:text-skyGreen font-medium transition-colors">
+                                                    <span className="text-base">🛒</span> All Products
+                                                </Link>
+                                            </div>
+
+                                            {/* Bottom CTA */}
+                                            <div className="col-span-2 mt-4 pt-4 border-t border-gray-100">
+                                                <Link
+                                                    to="/bulk-orders"
+                                                    onClick={() => setShopDropOpen(false)}
+                                                    className="flex items-center justify-center gap-2 bg-skyGreen text-white text-sm font-semibold py-2.5 rounded-xl hover:bg-[#0c660b] transition-colors"
+                                                >
+                                                    🤝 Bulk Orders &amp; Corporate Gifting
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
                             <Link to="/contact" className="text-sm font-semibold text-gray-700 hover:text-skyGreen transition-colors tracking-wide">Contact</Link>
+                            <Link to="/bulk-orders" className="text-sm font-semibold text-[#0E7A0D] hover:text-skyGreen transition-colors tracking-wide border border-[#0E7A0D] px-3 py-1.5 rounded-lg hover:bg-skyGreen/5">Bulk Orders</Link>
                         </nav>
 
                         {/* Center Logo */}
@@ -160,13 +230,43 @@ const Header = () => {
                         </div>
 
                         {/* Drawer Links */}
-                        <nav className="flex flex-col flex-1 overflow-y-auto px-5 py-6 space-y-4">
-                            <Link to="/" className="text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2 border-b border-gray-50">Home</Link>
-                            <Link to="/shop" className="text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2 border-b border-gray-50">Shop</Link>
-                            <Link to="/contact" className="text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2 border-b border-gray-50">Contact</Link>
-                            <Link to="/wishlist" className="flex items-center gap-3 text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2 border-b border-gray-50">
+                        <nav className="flex flex-col flex-1 overflow-y-auto px-5 py-6 space-y-1">
+                            <Link to="/" className="text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2.5 border-b border-gray-50">Home</Link>
+
+                            {/* Shop Accordion */}
+                            <div className="border-b border-gray-50">
+                                <button
+                                    onClick={() => setMobileShopOpen(o => !o)}
+                                    className="flex items-center justify-between w-full text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2.5"
+                                >
+                                    Shop
+                                    <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${mobileShopOpen ? 'rotate-180 text-[#0E7A0D]' : ''}`} />
+                                </button>
+                                {mobileShopOpen && (
+                                    <div className="pl-3 pb-3 flex flex-col gap-1">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2 mb-1">Bird Feeders</p>
+                                        <Link to="/collections/bird-feeders" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">🪺 All Bird Feeders</Link>
+                                        <Link to="/collections/hanging-bird-feeders" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">🔗 Hanging Feeders</Link>
+                                        <Link to="/collections/window-bird-feeders" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">🪟 Window Feeders</Link>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-3 mb-1">Bird Watering</p>
+                                        <Link to="/collections/water-feeders" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">💧 Water Feeders</Link>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-3 mb-1">Bird Homes</p>
+                                        <Link to="/collections/bird-houses" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">🏠 Bird Houses</Link>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-3 mb-1">More</p>
+                                        <Link to="/collections/best-sellers" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">⭐ Best Sellers</Link>
+                                        <Link to="/collections/accessories" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">🎒 Accessories</Link>
+                                        <Link to="/shop" className="text-sm font-medium text-gray-700 hover:text-[#0E7A0D] py-1.5">🛒 All Products</Link>
+                                    </div>
+                                )}
+                            </div>
+
+                            <Link to="/contact" className="text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2.5 border-b border-gray-50">Contact</Link>
+                            <Link to="/wishlist" className="flex items-center gap-3 text-lg font-semibold text-gray-800 hover:text-[#0E7A0D] py-2.5 border-b border-gray-50">
                                 <Heart className="w-5 h-5" />
                                 Wishlist ({wishlistCount})
+                            </Link>
+                            <Link to="/bulk-orders" className="flex items-center gap-2 text-lg font-semibold text-[#0E7A0D] hover:text-black py-2.5 border-b border-gray-50">
+                                🤝 Bulk Orders
                             </Link>
                         </nav>
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Star, StarHalf, Facebook, Linkedin, Twitter, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, StarHalf, Facebook, Linkedin, Twitter, Heart, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { fetchProductById, fetchProducts } from '../store/slices/productSlice';
 import { addToCart } from '../store/slices/cartSlice';
 import { toggleWishlist, selectWishlistIds } from '../store/slices/wishlistSlice';
@@ -255,6 +255,20 @@ const ProductDetails = () => {
                                 className="border border-black rounded-xl h-14 px-8 md:px-10 text-black font-semibold hover:bg-black hover:text-white transition shrink-0">
                                 Add To Cart
                             </button>
+
+                            {/* ── WhatsApp Order Button ────────────────────────────── */}
+                            <a
+                                href={`https://wa.me/918329245729?text=${encodeURIComponent(`Hi SkyBeings! 🐦\nI want to order: *${product.name}*\nPrice: ₹${Math.round(product.price)?.toLocaleString('en-IN')}\nQty: ${quantity}\n\nPlease confirm availability and share payment details. Thank you!`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                id="whatsapp-order-btn"
+                                className="flex items-center gap-2.5 bg-[#25D366] hover:bg-[#1ebe5d] text-white font-semibold rounded-xl h-14 px-6 md:px-8 transition-all duration-200 shadow-md hover:shadow-lg shrink-0 active:scale-95"
+                            >
+                                <MessageCircle className="w-5 h-5 fill-white" />
+                                <span className="hidden sm:inline">Order on WhatsApp</span>
+                                <span className="sm:hidden">WhatsApp</span>
+                            </a>
+
                             <button
                                 onClick={() => product && dispatch(toggleWishlist(product))}
                                 className={`border rounded-xl h-14 w-14 flex justify-center items-center font-semibold transition shrink-0 ${isWishlisted ? 'border-red-500 bg-red-50 hover:bg-red-100' : 'border-black text-black hover:bg-black hover:text-white'}`}>

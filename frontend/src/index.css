@@ -35,6 +35,17 @@
     border-radius: 99px;
   }
 
+  /* Hide scrollbar (used for horizontal scroll strips) */
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+
   /* Admin fade-in animation */
   @keyframes fadeSlideIn {
     from {
