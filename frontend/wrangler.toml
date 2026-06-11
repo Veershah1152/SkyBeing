@@ -1,0 +1,8 @@
+name = "skybeing"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-09-23"
+
+[vars]
+BACKEND_URL = "https://skybeings-backend.talkwithaman22.workers.dev"
+VITE_API_BASE_URL = "https://skybeings-backend.talkwithaman22.workers.dev/api/v1"
+

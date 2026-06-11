@@ -5,6 +5,7 @@ import api from '../api/axios';
 import { useToast } from '../components/ui/Toast';
 import DOMPurify from 'dompurify';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
+import useSEO from '../hooks/useSEO';
 
 const BlogDetails = () => {
     const { slug } = useParams();
@@ -12,6 +13,11 @@ const BlogDetails = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const toast = useToast();
+
+    useSEO({
+        title: blog ? blog.title : 'Loading Article...',
+        description: blog ? (blog.excerpt || blog.content?.replace(/<[^>]*>/g, '').slice(0, 160)) : 'Read the latest nature logs and bird articles from SkyBeings.'
+    });
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -46,8 +52,24 @@ const BlogDetails = () => {
 
     if (!blog) return null;
 
+    const blogSchema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": blog.title,
+        "image": blog.coverImage ? [blog.coverImage] : [],
+        "datePublished": blog.createdAt,
+        "dateModified": blog.updatedAt || blog.createdAt,
+        "author": [{
+            "@type": "Person",
+            "name": blog.author || "Admin"
+        }]
+    };
+
     return (
         <div className="bg-[#FAFAFA] min-h-screen pb-24 pt-28">
+            <script type="application/ld+json">
+                {JSON.stringify(blogSchema)}
+            </script>
             <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Back Link */}

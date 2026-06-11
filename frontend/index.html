@@ -2,9 +2,20 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y6SJEH301S"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Y6SJEH301S');
+  </script>
+
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/logo-cropped.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Discover premium bird feeders, bird houses, and water feeders at SkyBeings. Create a sanctuary for birds in your garden today." />
+  <meta name="google-site-verification" content="uI4_dK1FNBZbZXNlkzdJaYj2qXXlAzNX-PQhSatIJZI" />
   <title>SkyBeings</title>
 
   <!--
@@ -18,9 +29,30 @@
     before main.jsx even downloads. This eliminates the "JS Gap" where the browser
     is waiting for script parse/execution before knowing it needs banners.
   -->
-  <link rel="preload" href="/api/v1/banners/active?page=home" as="fetch" crossorigin="anonymous" />
-  <link rel="preload" href="/api/v1/settings/maintenance" as="fetch" crossorigin="anonymous" />
-  <link rel="preload" href="/api/v1/users/me" as="fetch" crossorigin="anonymous" />
+  <link rel="preload" href="/api/v1/banners/active?page=home" as="fetch" crossorigin="use-credentials" />
+  <link rel="preload" href="/api/v1/settings/maintenance" as="fetch" crossorigin="use-credentials" />
+
+  <script>
+    (function () {
+      try {
+        var token = localStorage.getItem('accessToken');
+        var headers = {};
+        if (token) {
+          headers['Authorization'] = 'Bearer ' + token;
+        }
+        window.__USER_PRELOAD__ = fetch('/api/v1/users/me', {
+          headers: headers,
+          credentials: 'include'
+        }).then(function (res) {
+          return res.json();
+        }).catch(function () {
+          return null;
+        });
+      } catch (e) {
+        // Fallback for cookie/localStorage restriction settings
+      }
+    })();
+  </script>
 
   <!-- Cloudinary: where all banner/product images are hosted -->
   <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
@@ -30,52 +62,82 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Google Tag Manager: loaded async/deferred, NOT render-blocking -->
+  <!-- 
+    ── Deferred Third-Party Analytics & Tracking ─────────────────────────────
+    Lightweight stubs are defined synchronously to prevent React from throwing errors.
+    The actual heavy scripts are loaded only after the first user interaction (or a 4s fallback timeout)
+    to free up the CPU main thread during initial page load and improve FCP/LCP.
+  -->
   <script>
-    // Defer GTM until after the page has loaded to avoid blocking LCP/FCP
-    window.addEventListener('load', function () {
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-        var f = d.getElementsByTagName(s)[0], j = d.createElement(s),
-          dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true;
-        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-      })(window, document, 'script', 'dataLayer', 'GTM-W3WQH94D');
-    });
-  </script>
-
-  <!-- Google Ads (gtag.js): deferred until after load -->
-  <script>
+    // 1. Data Layer and Google Ads stubs
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    window.addEventListener('load', function () {
-      var adsId = '%VITE_GOOGLE_ADS_ID%';
-      if (adsId && adsId !== '%VITE_GOOGLE_ADS_ID%') {
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + adsId;
-        document.head.appendChild(s);
-        gtag('config', adsId);
-      }
-    });
-  </script>
+    window.gtag = window.gtag || function () { dataLayer.push(arguments); };
 
-  <!-- Meta Pixel: deferred until after load -->
-  <script>
-    window.addEventListener('load', function () {
-      !function (f, b, e, v, n, t, s) {
-        if (f.fbq) return; n = f.fbq = function () {
-          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-        };
-        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-        n.queue = []; t = b.createElement(e); t.async = !0;
-        t.src = v; s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s)
-      }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '298502654348777');
-      fbq('track', 'PageView');
-    });
+    // 2. Meta Pixel stub
+    window.fbq = function () {
+      if (window.fbq.callMethod) {
+        window.fbq.callMethod.apply(window.fbq, arguments);
+      } else {
+        window.fbq.queue.push(arguments);
+      }
+    };
+    window.fbq.push = window.fbq;
+    window.fbq.loaded = true;
+    window.fbq.version = '2.0';
+    window.fbq.queue = [];
+
+    // 3. Lazy script loader
+    (function () {
+      var initialized = false;
+
+      function initThirdParty() {
+        if (initialized) return;
+        initialized = true;
+
+        // Cleanup event listeners
+        events.forEach(function (e) {
+          window.removeEventListener(e, initThirdParty, { passive: true });
+        });
+        clearTimeout(timeoutId);
+
+        // Load GTM
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+          var f = d.getElementsByTagName(s)[0], j = d.createElement(s),
+            dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true;
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+          f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-W3WQH94D');
+
+        // Google Analytics script is loaded statically in the <head> to satisfy GSC/GA detection.
+
+        // Load Google Ads script
+        var adsId = '%VITE_GOOGLE_ADS_ID%';
+        if (adsId && adsId !== '%VITE_GOOGLE_ADS_ID%') {
+          var adsScript = document.createElement('script');
+          adsScript.async = true;
+          adsScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + adsId;
+          document.head.appendChild(adsScript);
+          window.gtag('config', adsId);
+        }
+
+        // Load Meta Pixel script
+        var pixelScript = document.createElement('script');
+        pixelScript.async = true;
+        pixelScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
+        document.head.appendChild(pixelScript);
+        window.fbq('init', '298502654348777');
+        window.fbq('track', 'PageView');
+      }
+
+      var events = ['scroll', 'click', 'mousemove', 'touchstart', 'keydown'];
+      events.forEach(function (e) {
+        window.addEventListener(e, initThirdParty, { once: true, passive: true });
+      });
+
+      // Fallback: load after 4 seconds of idle time if no interaction occurs
+      var timeoutId = setTimeout(initThirdParty, 4000);
+    })();
   </script>
 </head>
 

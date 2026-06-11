@@ -13,25 +13,35 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false,
 }));
 
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === 'production' ? 200 : 2000,
-    standardHeaders: true,
-    legacyHeaders: false,
-    skip: (req) => req.ip === '::1' || req.ip === '127.0.0.1',
-    message: "Too many requests from this IP, please try again after 15 minutes"
-});
+let limiter;
+if (typeof globalThis.WebSocketPair !== "undefined") {
+    // Under Cloudflare Workers, we skip in-memory rate limiting since each isolate is short-lived
+    // and global timers (setInterval) are disallowed during cold starts.
+    limiter = (req, res, next) => next();
+} else {
+    limiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: process.env.NODE_ENV === 'production' ? 200 : 2000,
+        standardHeaders: true,
+        legacyHeaders: false,
+        skip: (req) => req.ip === '::1' || req.ip === '127.0.0.1',
+        message: "Too many requests from this IP, please try again after 15 minutes"
+    });
+}
 app.use(limiter);
-
-const allowedOrigins = process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(",").map(o => o.trim())
-    : [];
 
 app.use(cors({
     origin: (origin, callback) => {
+        // No origin = same-origin / server-to-server request – allow it
         if (!origin) return callback(null, true);
+
+        const allowedOrigins = process.env.CORS_ORIGIN
+            ? process.env.CORS_ORIGIN.split(",").map(o => o.trim())
+            : [];
+
         if (allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
-            return callback(null, true);
+            // Reflect the exact origin back (NOT true/*) so it works with credentials
+            return callback(null, origin);
         }
         return callback(new Error(`CORS: Origin '${origin}' not allowed`));
     },

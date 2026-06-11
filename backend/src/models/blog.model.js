@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose/lib/index.js";
 
 const blogSchema = new mongoose.Schema({
     title:     { type: String, required: true, trim: true },

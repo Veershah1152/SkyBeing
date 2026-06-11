@@ -1,6 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose/lib/index.js";
+const { Schema } = mongoose;
 import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 
 const userSchema = new Schema(
     {

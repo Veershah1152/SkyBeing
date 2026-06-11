@@ -27,13 +27,22 @@ export const googleLogin = createAsyncThunk(
     }
 );
 
-// Fetch Current User thunk (using HTTP-Only cookie)
+// Fetch Current User thunk (using HTTP-Only cookie / Bearer token fallback)
 export const fetchCurrentUser = createAsyncThunk(
     'auth/fetchCurrentUser',
     async (_, { rejectWithValue }) => {
         try {
+            // Check if user prefetch is already running/finished in index.html to eliminate JS render gap
+            if (typeof window !== 'undefined' && window.__USER_PRELOAD__) {
+                const responseData = await window.__USER_PRELOAD__;
+                // Delete the global reference so subsequent manual fetches bypass this cache
+                delete window.__USER_PRELOAD__;
+                if (responseData && responseData.success) {
+                    return responseData.data; // { _id, name, email, role, etc } or null
+                }
+            }
             const response = await api.get('/users/me');
-            return response.data.data; // { _id, name, email, role, etc }
+            return response.data.data; // { _id, name, email, role, etc } or null
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || 'Not authenticated');
         }

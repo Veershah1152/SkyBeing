@@ -2,8 +2,14 @@ import { useEffect, useState } from 'react';
 import BannerCarousel from '../components/ui/BannerCarousel';
 import { Leaf, HeartHandshake, Sprout, Bird } from 'lucide-react';
 import api from '../api/axios';
+import useSEO from '../hooks/useSEO';
 
 const AboutUs = () => {
+    useSEO({
+        title: 'About Us',
+        description: 'Learn about SkyBeings, our mission to support local avian life in India, and how we craft our high-quality bird feeders, houses, and water sanctuaries.'
+    });
+
     const [contentImage, setContentImage] = useState(null);
 
     useEffect(() => {

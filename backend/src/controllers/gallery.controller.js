@@ -1,6 +1,5 @@
 import { Gallery } from "../models/gallery.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { v2 as cloudinary } from "cloudinary";
+import { uploadFile as uploadOnCloudflare, deleteFile as deleteFromCloudflare } from "../utils/fileStorage.js";
 
 // ── Public: get all active gallery images ─────────────────────────────────────
 export const getGalleryImages = async (req, res) => {
@@ -27,8 +26,8 @@ export const uploadGalleryImage = async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ success: false, message: "No image file provided" });
 
-        const result = await uploadOnCloudinary(req.file.path);
-        if (!result) return res.status(500).json({ success: false, message: "Cloudinary upload failed" });
+        const result = await uploadOnCloudflare(req.file);
+        if (!result) return res.status(500).json({ success: false, message: "Image upload failed" });
 
         const image = await Gallery.create({
             imageUrl: result.secure_url,
@@ -63,9 +62,9 @@ export const deleteGalleryImage = async (req, res) => {
         const image = await Gallery.findById(req.params.id);
         if (!image) return res.status(404).json({ success: false, message: "Image not found" });
 
-        // Delete from Cloudinary
+        // Delete from Cloudflare R2
         if (image.publicId) {
-            await cloudinary.uploader.destroy(image.publicId);
+            await deleteFromCloudflare(image.publicId);
         }
 
         await image.deleteOne();

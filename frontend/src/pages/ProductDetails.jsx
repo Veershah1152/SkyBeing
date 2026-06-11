@@ -8,11 +8,18 @@ import { toggleWishlist, selectWishlistIds } from '../store/slices/wishlistSlice
 import api from '../api/axios';
 import { useToast } from '../components/ui/Toast';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
+import useSEO from '../hooks/useSEO';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
     const { selectedProduct: product, items, status } = useSelector(state => state.products);
+
+    useSEO({
+        title: product ? product.name : 'Loading Product...',
+        description: product ? (product.shortDescription || product.description?.slice(0, 160)) : 'Loading premium bird supplies from SkyBeings.'
+    });
+
     const { isAuthenticated } = useSelector(state => state.auth);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('description');
@@ -75,8 +82,35 @@ const ProductDetails = () => {
         return <SkeletonLoader text="Loading product details..." />;
     }
 
+    const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "image": product.images || [],
+        "description": product.shortDescription || product.description || "",
+        "sku": product.sku || product._id,
+        "offers": {
+            "@type": "Offer",
+            "url": window.location.href,
+            "priceCurrency": "INR",
+            "price": product.price,
+            "itemCondition": "https://schema.org/NewCondition",
+            "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        },
+        ...(product.ratings > 0 ? {
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": product.ratings,
+                "reviewCount": product.reviews?.length || 1
+            }
+        } : {})
+    };
+
     return (
         <div className="bg-white min-h-screen">
+            <script type="application/ld+json">
+                {JSON.stringify(productSchema)}
+            </script>
             {/* Breadcrumb row */}
             <div className="bg-[#F9F1E7] px-4 md:px-16 py-6 flex items-center text-sm font-medium text-[#9F9F9F]">
                 <Link to="/" className="text-black hover:underline transition">Home</Link>

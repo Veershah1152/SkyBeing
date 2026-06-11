@@ -12,10 +12,18 @@ const api = axios.create({
 // Optionally, add an interceptor for handling 401s or adding Authorization headers if not using cookies
 api.interceptors.request.use(
     (config) => {
-        // Send token as Authorization header (works cross-domain, unlike cookies)
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+        // Skip adding Authorization header to public endpoints to ensure preload requests (which don't have it) match and are reused.
+        const isPublicRoute = 
+            config.url === '/settings/maintenance' || 
+            config.url.startsWith('/banners/active') || 
+            config.url === '/stats/visit';
+
+        if (!isPublicRoute) {
+            // Send token as Authorization header (works cross-domain, unlike cookies)
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                config.headers['Authorization'] = `Bearer ${token}`;
+            }
         }
         return config;
     },

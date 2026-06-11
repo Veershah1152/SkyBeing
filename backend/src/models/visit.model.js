@@ -1,4 +1,5 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose/lib/index.js";
+const { Schema } = mongoose;
 
 const visitSchema = new Schema({
     ip: { type: String, default: "unknown" },

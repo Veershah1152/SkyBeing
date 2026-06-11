@@ -5,7 +5,13 @@
 # ─── Environment / Secrets ───────────────────────────────────────────────────
 .env
 .env.*
+.dev.vars
 !.env.example        # always allow the example template
+
+# ─── Cloudflare Wrangler ─────────────────────────────────────────────────────
+.wrangler/
+**/wrangler.toml.local
+
 
 # ─── Dependencies ────────────────────────────────────────────────────────────
 node_modules/

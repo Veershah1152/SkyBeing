@@ -7,6 +7,7 @@ import { toggleWishlist, selectWishlistIds } from '../store/slices/wishlistSlice
 import BannerCarousel from '../components/ui/BannerCarousel';
 import { Search, SlidersHorizontal, ChevronDown, Star, X, Heart, ShoppingCart } from 'lucide-react';
 import { useToast } from '../components/ui/Toast';
+import useSEO from '../hooks/useSEO';
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -40,6 +41,11 @@ const StarRating = ({ rating = 0 }) => (
 );
 
 const Shop = () => {
+    useSEO({
+        title: 'Shop Premium Bird Supplies',
+        description: 'Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders. Provide premium comfort to local wild birds.'
+    });
+
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();

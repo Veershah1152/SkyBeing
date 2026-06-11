@@ -4,7 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Product } from "../models/product.model.js";
 import { Order } from "../models/order.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadFile as uploadOnCloudinary } from "../utils/fileStorage.js";
 
 // =======================
 // DASHBOARD & ANALYTICS
@@ -236,14 +236,14 @@ export const adminCreateProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
 
-    const imageLocalPaths = req.files?.map(file => file.path) || [];
-    if (imageLocalPaths.length === 0) {
+    const imageFiles = req.files || [];
+    if (imageFiles.length === 0) {
         throw new ApiError(400, "At least one product image is required");
     }
 
     const uploadedImages = [];
-    for (const path of imageLocalPaths) {
-        const uploaded = await uploadOnCloudinary(path);
+    for (const file of imageFiles) {
+        const uploaded = await uploadOnCloudinary(file);
         if (uploaded?.url) uploadedImages.push(uploaded.url);
     }
 

@@ -1,7 +1,12 @@
 # ─── Environment / Secrets ───────────────────────────────────────────────────
 .env
 .env.*
+.dev.vars
 !.env.example
+
+# ─── Cloudflare Wrangler ─────────────────────────────────────────────────────
+.wrangler/
+
 
 # ─── Dependencies ────────────────────────────────────────────────────────────
 node_modules/

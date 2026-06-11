@@ -4,8 +4,14 @@ import { BookOpen, Calendar, ArrowRight, Eye, Camera } from 'lucide-react';
 import api from '../api/axios';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import BannerCarousel from '../components/ui/BannerCarousel';
+import useSEO from '../hooks/useSEO';
 
 const Blogs = () => {
+    useSEO({
+        title: 'Our Journal & Bird Guides',
+        description: 'Discover stories, guides, and tips for nature lovers and backyard birders at SkyBeings. Learn how to attract and care for local wild birds.'
+    });
+
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
 

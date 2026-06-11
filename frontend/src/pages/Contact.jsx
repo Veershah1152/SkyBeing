@@ -4,8 +4,14 @@ import { Link } from 'react-router-dom';
 import BannerCarousel from '../components/ui/BannerCarousel';
 import api from '../api/axios';
 import { useToast } from '../components/ui/Toast';
+import useSEO from '../hooks/useSEO';
 
 const Contact = () => {
+    useSEO({
+        title: 'Contact Us',
+        description: 'Have questions or need support? Contact the SkyBeings team. We are here to help you set up the perfect backyard bird sanctuary.'
+    });
+
     const toast = useToast();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({

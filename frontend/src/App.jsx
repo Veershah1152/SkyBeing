@@ -32,6 +32,9 @@ function VisitTracker() {
       window.fbq("track", "PageView");
     }
     if (typeof window !== "undefined" && window.gtag) {
+      // Track Google Analytics page view
+      window.gtag("config", "G-Y6SJEH301S", { page_path: location.pathname + location.search });
+
       const adsId = import.meta.env.VITE_GOOGLE_ADS_ID;
       if (adsId && adsId !== "YOUR_GOOGLE_ADS_ID_HERE") {
         window.gtag("config", adsId, { page_path: location.pathname + location.search });

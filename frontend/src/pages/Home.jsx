@@ -14,6 +14,7 @@ import waterFeederImg from '../assets/images/water_feeder.png';
 import birdHouseImg from '../assets/images/bird_house.png';
 
 import SkeletonLoader from '../components/ui/SkeletonLoader';
+import useSEO from '../hooks/useSEO';
 
 // ── Gallery Section Component ────────────────────────────────────────────────
 const MOSAIC_COLS = [
@@ -134,6 +135,11 @@ const GallerySection = () => {
 
 
 const Home = () => {
+    useSEO({
+        title: 'Premium Bird Feeders & Houses',
+        description: 'Create a nature-filled sanctuary in your garden. Browse and buy premium bird feeders, custom handcrafted bird houses, and fresh water feeders at SkyBeings.'
+    });
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { items: products, status } = useSelector(state => state.products);

@@ -1,9 +1,40 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const inlineCssPlugin = {
+  name: 'inline-css-plugin',
+  enforce: 'post',
+  generateBundle(options, bundle) {
+    const htmlFile = bundle['index.html'];
+    if (!htmlFile) return;
+
+    let html = typeof htmlFile.source === 'string'
+      ? htmlFile.source
+      : new TextDecoder('utf-8').decode(htmlFile.source);
+
+    const cssFiles = Object.keys(bundle).filter(name => name.endsWith('.css'));
+    cssFiles.forEach(file => {
+      const asset = bundle[file];
+      if (!asset) return;
+
+      const cssContent = asset.source.toString();
+      const fileName = file.split('/').pop();
+      const escapedFileName = fileName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp(`<link[^>]*href="[^"]*${escapedFileName}"[^>]*>`, 'g');
+      
+      if (regex.test(html)) {
+        html = html.replace(regex, `<style>${cssContent}</style>`);
+        delete bundle[file]; // prevent emitting physical CSS file
+      }
+    });
+
+    htmlFile.source = html;
+  }
+};
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), inlineCssPlugin],
 
   server: {
     headers: {
@@ -35,8 +66,8 @@ export default defineConfig({
     // (no need to polyfill generators, async/await, etc.)
     target: 'es2018',
 
-    // Split CSS per chunk so only the CSS for the current route loads
-    cssCodeSplit: true,
+    // Consolidate CSS into a single bundle to allow perfect inlining into index.html
+    cssCodeSplit: false,
 
     // Increase chunk size warning limit — jspdf/xlsx are expected to be large
     chunkSizeWarningLimit: 600,

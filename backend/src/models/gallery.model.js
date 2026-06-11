@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose/lib/index.js";
 
 const gallerySchema = new mongoose.Schema({
     imageUrl: { type: String, required: true },

@@ -2,8 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Product } from "../models/product.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import mongoose from "mongoose";
+import { uploadFile as uploadOnCloudinary } from "../utils/fileStorage.js";
+import mongoose from "mongoose/lib/index.js";
 
 const createProduct = asyncHandler(async (req, res) => {
     const {
@@ -17,11 +17,11 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Name, category, price and stock are required");
     }
 
-    const imageLocalPaths = req.files?.map(file => file.path) || [];
+    const imageFiles = req.files || [];
 
     const uploadedImages = [];
-    for (const localPath of imageLocalPaths) {
-        const uploaded = await uploadOnCloudinary(localPath);
+    for (const file of imageFiles) {
+        const uploaded = await uploadOnCloudinary(file);
         if (uploaded?.url) uploadedImages.push(uploaded.url);
     }
 
@@ -108,7 +108,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     if (req.files && req.files.length > 0) {
         const newImages = [];
         for (const file of req.files) {
-            const uploaded = await uploadOnCloudinary(file.path);
+            const uploaded = await uploadOnCloudinary(file);
             if (uploaded?.url) newImages.push(uploaded.url);
         }
         if (newImages.length > 0) updatedImages = newImages;

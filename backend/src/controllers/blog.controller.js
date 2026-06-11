@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Blog } from "../models/blog.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadFile as uploadOnCloudinary } from "../utils/fileStorage.js";
 import fs from "fs";
 
 // ── Public: list all published blogs ─────────────────────────────────────────
@@ -34,9 +34,8 @@ export const createBlog = asyncHandler(async (req, res) => {
 
     let coverImage = "";
     if (req.file) {
-        const uploaded = await uploadOnCloudinary(req.file.path);
+        const uploaded = await uploadOnCloudinary(req.file);
         coverImage = uploaded?.secure_url || "";
-        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     }
 
     const blog = await Blog.create({
@@ -62,9 +61,8 @@ export const updateBlog = asyncHandler(async (req, res) => {
     if (tags)    blog.tags    = JSON.parse(tags);
 
     if (req.file) {
-        const uploaded = await uploadOnCloudinary(req.file.path);
+        const uploaded = await uploadOnCloudinary(req.file);
         blog.coverImage = uploaded?.secure_url || blog.coverImage;
-        if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
     }
 
     await blog.save();

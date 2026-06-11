@@ -1,5 +1,5 @@
 import { Banner } from "../models/banner.model.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadFile as uploadOnCloudinary } from "../utils/fileStorage.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -29,10 +29,10 @@ export const createBanner = asyncHandler(async (req, res) => {
     const { title, subtitle, buttonText, buttonLink, order, pages } = req.body;
     if (!title) throw new ApiError(400, "Title is required");
 
-    const imageLocalPath = req.file?.path;
-    if (!imageLocalPath) throw new ApiError(400, "Banner image is required");
+    const imageFile = req.file;
+    if (!imageFile) throw new ApiError(400, "Banner image is required");
 
-    const uploaded = await uploadOnCloudinary(imageLocalPath);
+    const uploaded = await uploadOnCloudinary(imageFile);
     if (!uploaded?.url) throw new ApiError(500, "Failed to upload banner image");
 
     // Parse pages — comes as JSON string or array
