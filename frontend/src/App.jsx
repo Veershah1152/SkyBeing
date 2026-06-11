@@ -216,6 +216,8 @@ function App() {
                         <Routes>
                           <Route path="/" element={<Home />} />
                           <Route path="/shop" element={<Shop />} />
+                          {/* ── SEO-friendly collection URLs (Step 2 of SEO roadmap) ── */}
+                          <Route path="/collections/:categorySlug" element={<Shop />} />
                           <Route path="/product/:id" element={<ProductDetails />} />
                           <Route path="/gallery" element={<Gallery />} />
                           <Route path="/blogs" element={<Blogs />} />

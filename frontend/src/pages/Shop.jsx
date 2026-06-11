@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../store/slices/productSlice';
 import { addToCart } from '../store/slices/cartSlice';
@@ -21,6 +21,98 @@ const FILTER_TABS = [
     { id: 'Accessories', label: 'Accessories' },
 ];
 
+// ── Slug → category mapping for /collections/:slug URLs ──────────────────────
+const SLUG_TO_CATEGORY = {
+    'bird-feeders': 'Bird Feeder',
+    'window-bird-feeders': 'Bird Feeder',
+    'hanging-bird-feeders': 'Bird Feeder',
+    'water-feeders': 'Water Feeder',
+    'bird-houses': 'Bird House',
+    'accessories': 'Accessories',
+    'best-sellers': 'best-sellers',
+};
+
+// ── Per-collection SEO metadata ───────────────────────────────────────────────
+const COLLECTION_SEO = {
+    'Bird Feeder': {
+        title: 'Buy Bird Feeders Online India',
+        description: 'Shop premium window and hanging bird feeders at SkyBeings. Weatherproof, easy-to-clean, 6-port designs with comfortable perches — perfect for balcony and garden use.',
+        canonical: 'https://skybeings.in/collections/bird-feeders',
+    },
+    'Water Feeder': {
+        title: 'Buy Water Feeders for Birds Online India',
+        description: 'Keep birds hydrated with SkyBeings water feeders. BPA-free, durable designs ideal for balcony, terrace, and garden setups. Attract sparrows, pigeons, and more.',
+        canonical: 'https://skybeings.in/collections/water-feeders',
+    },
+    'Bird House': {
+        title: 'Buy Bird Houses Online India',
+        description: 'Give birds a safe nesting home with SkyBeings handcrafted bird houses. Weatherproof, spacious, and designed for Indian garden birds. Ideal balcony and tree mounting.',
+        canonical: 'https://skybeings.in/collections/bird-houses',
+    },
+    'Accessories': {
+        title: 'Bird Accessories & Supplies Online India',
+        description: 'Browse SkyBeings bird accessories — hanging hooks, cleaning brushes, replacement ports and more. Everything you need to maintain a perfect bird feeding station.',
+        canonical: 'https://skybeings.in/collections/accessories',
+    },
+    'best-sellers': {
+        title: 'Best Selling Bird Feeders & Accessories India',
+        description: 'Discover our top-rated, best-selling bird feeders, water feeders and bird houses at SkyBeings. Trusted by bird lovers across India for quality and durability.',
+        canonical: 'https://skybeings.in/collections/best-sellers',
+    },
+};
+
+// ── Per-collection SEO description texts (150-200 words each) ────────────────
+const COLLECTION_DESCRIPTIONS = {
+    'Bird Feeder': (
+        <div className="max-w-4xl mx-auto mt-16 pt-12 border-t border-gray-100 text-gray-500 text-sm leading-relaxed">
+            <h2 className="text-lg font-bold text-gray-800 mb-3">About Our Bird Feeders</h2>
+            <p>
+                SkyBeings bird feeders are engineered for the Indian climate — UV-stabilised, all-weather weatherproof plastic
+                that resists monsoon humidity, summer heat and winter cold. Our signature 6-port hanging feeders allow multiple
+                birds to feed simultaneously, fitted with comfortable perch rods so birds can land and eat without stress.
+                Each feeder features a wide-mouth fill opening for easy seed loading and a removable base tray for effortless
+                cleaning. Whether you are mounting one on a window suction cup, hanging it from a balcony grill, or suspending
+                it from a garden tree, our feeders are compatible with all setups. Designed to attract sparrows, bulbuls,
+                mynas, sunbirds and more, they are pre-drilled with drainage holes to prevent seed rot.
+                SkyBeings feeders make nature accessible to every apartment dweller and garden owner across India,
+                from Mumbai high-rises to Bangalore villas — turning your window into a living bird sanctuary every morning.
+            </p>
+        </div>
+    ),
+    'Water Feeder': (
+        <div className="max-w-4xl mx-auto mt-16 pt-12 border-t border-gray-100 text-gray-500 text-sm leading-relaxed">
+            <h2 className="text-lg font-bold text-gray-800 mb-3">About Our Water Feeders</h2>
+            <p>
+                Fresh water is the one thing birds need more than food, especially through India's intense summer months.
+                SkyBeings water feeders are crafted from BPA-free, food-grade materials with a slow-drip valve that keeps
+                water continuously fresh without overflowing. The wide, shallow basin mimics natural ponds so birds can
+                bathe and drink comfortably. Our feeders are compatible with standard PET bottles for easy refilling
+                and include wall-mount and balcony-clip brackets. The transparent reservoir lets you monitor water levels
+                at a glance, and the anti-algae inner coating reduces cleaning frequency. Ideal for attracting sparrows,
+                pigeons, crows, and migratory birds to your terrace or garden, our water feeders are used by bird lovers
+                from Rajasthan deserts to Kerala backyards. Give the birds in your neighbourhood a cool, clean drink
+                and watch your garden come alive with daily avian visitors all year round.
+            </p>
+        </div>
+    ),
+    'Bird House': (
+        <div className="max-w-4xl mx-auto mt-16 pt-12 border-t border-gray-100 text-gray-500 text-sm leading-relaxed">
+            <h2 className="text-lg font-bold text-gray-800 mb-3">About Our Bird Houses</h2>
+            <p>
+                SkyBeings bird houses provide a safe, sheltered nesting environment for cavity-nesting birds like sparrows,
+                mynas and parakeets — birds that have lost natural nesting sites to urban construction across India.
+                Each bird house is handcrafted from weatherproof, rot-resistant materials with a precisely sized entry hole
+                (28–32 mm) that keeps predators out while letting target species in. The ventilated roof design prevents
+                heat buildup, and the hinged side panel allows easy cleaning between nesting seasons. Our bird houses come
+                with pre-installed mounting hardware for garden posts, balcony railings and tree trunks. Painted with
+                non-toxic, bird-safe coatings in earth-tone colours that blend naturally into garden foliage. Whether you
+                live in a high-rise apartment with a balcony or a sprawling garden home, a SkyBeings bird house transforms
+                your space into a nesting haven — helping restore urban biodiversity one bird family at a time.
+            </p>
+        </div>
+    ),
+};
+
 const SORT_OPTIONS = [
     { value: 'default', label: 'Default Sorting' },
     { value: 'price-asc', label: 'Price: Low to High' },
@@ -41,14 +133,23 @@ const StarRating = ({ rating = 0 }) => (
 );
 
 const Shop = () => {
-    useSEO({
-        title: 'Shop Premium Bird Supplies',
-        description: 'Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders. Provide premium comfort to local wild birds.'
-    });
-
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { categorySlug } = useParams();
+
+    // ── Resolve active category: URL slug > location.state > 'all' ──────────
+    const slugCategory = categorySlug ? (SLUG_TO_CATEGORY[categorySlug] || 'all') : null;
+    const initialCategory = slugCategory || location.state?.category || 'all';
+
+    // ── Per-collection SEO ────────────────────────────────────────────────────
+    const collectionSeo = COLLECTION_SEO[initialCategory] || {};
+    useSEO({
+        title: collectionSeo.title || 'Shop Premium Bird Supplies',
+        description: collectionSeo.description || 'Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders. Provide premium comfort to local wild birds.',
+        canonical: collectionSeo.canonical || 'https://skybeings.in/shop',
+    });
+
     const { items: products, status } = useSelector(state => state.products);
     const wishlistIds = useSelector(selectWishlistIds);
     const [hoveredProd, setHoveredProd] = useState(null);
@@ -56,7 +157,7 @@ const Shop = () => {
     const toast = useToast();
 
     // Filter state
-    const [activeTab, setActiveTab] = useState(location.state?.category || 'all');
+    const [activeTab, setActiveTab] = useState(initialCategory);
     const [sortBy, setSortBy] = useState('default');
     const [sortOpen, setSortOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -77,11 +178,14 @@ const Shop = () => {
         if (status === 'idle') dispatch(fetchProducts());
     }, [status, dispatch]);
 
+    // Sync activeTab when navigating between /collections/* routes
     useEffect(() => {
-        if (location.state?.category) {
+        if (slugCategory) {
+            setActiveTab(slugCategory);
+        } else if (location.state?.category) {
             setActiveTab(location.state.category);
         }
-    }, [location.state?.category]);
+    }, [slugCategory, location.state?.category]);
 
     // Reset page when filters change
     useEffect(() => { setCurrentPage(1); }, [activeTab, sortBy, searchQuery]);
@@ -439,8 +543,12 @@ const Shop = () => {
                         </p>
                     )
                 }
-            </div >
-        </div >
+
+                {/* ── SEO Category Description (150-200 words for Google) ──── */}
+                {COLLECTION_DESCRIPTIONS[activeTab] || null}
+
+            </div>
+        </div>
     );
 };
 

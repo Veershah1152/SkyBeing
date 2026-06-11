@@ -136,8 +136,9 @@ const GallerySection = () => {
 
 const Home = () => {
     useSEO({
-        title: 'Premium Bird Feeders & Houses',
-        description: 'Create a nature-filled sanctuary in your garden. Browse and buy premium bird feeders, custom handcrafted bird houses, and fresh water feeders at SkyBeings.'
+        title: 'Premium Bird Feeders & Houses Online India',
+        description: 'Shop premium, all-weather bird feeders, water feeders, and bird houses at SkyBeings. Bring nature to your window with durable balcony and garden bird accessories.',
+        canonical: 'https://skybeings.in/',
     });
 
     const dispatch = useDispatch();
@@ -153,9 +154,9 @@ const Home = () => {
 
     const displayProducts = products.length > 0 ? products.slice(0, 8) : [];
     const categories = [
-        { name: 'Bird Feeder', image: birdFeederImg },
-        { name: 'Water Feeder', image: waterFeederImg },
-        { name: 'Bird House', image: birdHouseImg },
+        { name: 'Bird Feeder', label: 'Bird Feeders', slug: 'bird-feeders', image: birdFeederImg },
+        { name: 'Water Feeder', label: 'Water Feeders', slug: 'water-feeders', image: waterFeederImg },
+        { name: 'Bird House', label: 'Bird Houses', slug: 'bird-houses', image: birdHouseImg },
     ];
 
     return (
@@ -189,12 +190,12 @@ const Home = () => {
 
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
                     {categories.map((cat, i) => (
-                        <Link to="/shop" state={{ category: cat.name }} key={i} className="flex flex-col group block">
+                        <Link to={`/collections/${cat.slug}`} key={i} className="flex flex-col group block">
                             <div className="bg-[#F0F0F0] h-24 sm:h-40 md:h-64 flex items-center justify-center overflow-hidden mb-0">
-                                <img src={cat.image} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                                <img src={cat.image} alt={cat.label} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                             </div>
                             <div className="w-full py-1.5 md:py-3 text-center bg-skyGreen text-white font-bold text-[10px] sm:text-xs md:text-base cursor-pointer group-hover:bg-skyGreen/90 transition leading-tight px-1">
-                                {cat.name}
+                                {cat.label}
                             </div>
                         </Link>
                     ))}
