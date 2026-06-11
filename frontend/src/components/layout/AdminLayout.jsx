@@ -101,6 +101,7 @@ const AdminLayout = () => {
                     <NavItem to="/admin/blogs" label="Blogs" icon={BookOpen} />
                     <NavItem to="/admin/banners" label="Banner" icon={Image} />
                     <NavItem to="/admin/gallery" label="Gallery" icon={GalleryHorizontal} />
+                    <NavItem to="/admin/dog-page" label="🐾 Dog Page" icon={null} />
                 </NavGroup>
 
                 <div className="pt-2 pb-1" />

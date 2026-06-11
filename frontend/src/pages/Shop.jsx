@@ -20,6 +20,7 @@ const FILTER_TABS = [
     { id: 'Water Feeder', label: 'Water Feeders' },
     { id: 'Bird House', label: 'Bird Houses' },
     { id: 'Accessories', label: 'Accessories' },
+    { id: 'Dogs', label: '🐾 Dogs' },
 ];
 
 // ── Slug → category mapping for /collections/:slug URLs ──────────────────────
@@ -31,6 +32,11 @@ const SLUG_TO_CATEGORY = {
     'bird-houses': 'Bird House',
     'accessories': 'Accessories',
     'best-sellers': 'best-sellers',
+    'dogs': 'Dogs',
+    'dog-food': 'Dogs',
+    'dog-toys': 'Dogs',
+    'dog-accessories': 'Dogs',
+    'dog-grooming': 'Dogs',
 };
 
 // ── Per-collection SEO metadata ───────────────────────────────────────────────
@@ -59,6 +65,11 @@ const COLLECTION_SEO = {
         title: 'Best Selling Bird Feeders & Accessories India',
         description: 'Discover our top-rated, best-selling bird feeders, water feeders and bird houses at SkyBeings. Trusted by bird lovers across India for quality and durability.',
         canonical: 'https://skybeings.in/collections/best-sellers',
+    },
+    'Dogs': {
+        title: 'Buy Premium Dog Products Online India — SkyBeings',
+        description: 'Shop dog food, toys, grooming supplies, collars, leashes, beds and health products at SkyBeings. Premium dog essentials delivered across India with fast shipping.',
+        canonical: 'https://skybeings.in/collections/dogs',
     },
 };
 
@@ -109,6 +120,21 @@ const COLLECTION_DESCRIPTIONS = {
                 non-toxic, bird-safe coatings in earth-tone colours that blend naturally into garden foliage. Whether you
                 live in a high-rise apartment with a balcony or a sprawling garden home, a SkyBeings bird house transforms
                 your space into a nesting haven — helping restore urban biodiversity one bird family at a time.
+            </p>
+        </div>
+    ),
+    'Dogs': (
+        <div className="max-w-4xl mx-auto mt-16 pt-12 border-t border-amber-100 text-gray-500 text-sm leading-relaxed">
+            <h2 className="text-lg font-bold text-gray-800 mb-3">About Our Dog Products</h2>
+            <p>
+                SkyBeings dog products are curated for the health, happiness and comfort of your furry companion.
+                From nutritious treats and durable toys to grooming essentials and stylish accessories — every
+                product is selected for quality and safety. Our dog range covers all breeds and ages, from
+                energetic puppies to senior dogs. Whether you need a chew-proof rope toy, a gentle shampoo for
+                sensitive skin, a harness for your morning walk, or a cozy orthopedic bed — SkyBeings has you
+                covered. All dog products are sourced for durability and pet safety, with non-toxic materials and
+                breed-appropriate sizing. Trusted by dog parents across India, from apartment Labradors in Mumbai
+                to indie dogs in Pune — because every dog deserves the best.
             </p>
         </div>
     ),

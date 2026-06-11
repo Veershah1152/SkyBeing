@@ -38,6 +38,14 @@ const productSchema = new Schema(
         shippingWidth: { type: String, default: "" },
         shippingHeight: { type: String, default: "" },
 
+        // Pet Info (for dog / cat / bird products)
+        petInfo: {
+            petType: { type: String, default: "" },                    // "dog", "cat", "bird"
+            breedSuitability: { type: [String], default: [] },         // ["All Breeds", "Large Dogs"]
+            ageGroup: { type: String, default: "" },                   // "Puppy", "Adult", "Senior", "All Ages"
+            weightRange: { type: String, default: "" },                // e.g. "5–15 kg"
+        },
+
         // Variants (for Variant Products)
         variants: [
             {

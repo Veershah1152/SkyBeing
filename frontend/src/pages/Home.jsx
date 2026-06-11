@@ -148,6 +148,31 @@ const Home = () => {
     const [hoveredProd, setHoveredProd] = useState(null);
     const toast = useToast();
 
+    // ── Dog page home section config ─────────────────────────────────
+    const [dogSection, setDogSection] = useState({
+        enabled: true,
+        badge: '🐕 New — Dog Collection',
+        title: 'Everything Your',
+        titleHighlight: 'Best Friend',
+        titleSuffix: 'Needs',
+        subtitle: 'From nutritious treats to cozy beds and fun toys — premium dog essentials curated with love, delivered to your door.',
+        ctaText: 'Shop Dog Products',
+        ctaLink: '/dogs',
+        chips: ['Food & Treats', 'Toys', 'Grooming', 'Collars & Leashes', 'Beds'],
+        cards: [
+            { emoji: '🦴', label: 'Food & Treats', desc: 'Healthy & delicious' },
+            { emoji: '🎾', label: 'Toys', desc: 'Keep them active' },
+            { emoji: '🛁', label: 'Grooming', desc: 'Clean & fresh' },
+            { emoji: '🏡', label: 'Beds & Crates', desc: 'Cozy comfort' },
+        ]
+    });
+
+    useEffect(() => {
+        api.get('/dog-page')
+            .then(res => { if (res.data?.data?.homeSection) setDogSection(res.data.data.homeSection); })
+            .catch(() => {});
+    }, []);
+
     useEffect(() => {
         if (status === 'idle') dispatch(fetchProducts());
     }, [status, dispatch]);
@@ -323,6 +348,78 @@ const Home = () => {
                     </Link>
                 </div>
             </section>
+
+            {/* ========== SHOP FOR YOUR DOG ========== */}
+            {dogSection.enabled !== false && (
+            <section
+                className="py-20 px-4 overflow-hidden relative"
+                style={{ background: 'linear-gradient(135deg, #FFF8F0 0%, #FEF0E0 60%, #FDE8CC 100%)' }}
+            >
+                <span className="absolute top-8 right-10 text-[7rem] select-none pointer-events-none" style={{ opacity: 0.08 }}>🐾</span>
+                <span className="absolute bottom-6 left-6 text-[5rem] select-none pointer-events-none" style={{ opacity: 0.08 }}>🐾</span>
+                <div className="absolute -right-20 top-0 w-80 h-80 rounded-full pointer-events-none"
+                    style={{ background: 'radial-gradient(circle, #C2692A15 0%, transparent 70%)' }} />
+
+                <div className="max-w-6xl mx-auto">
+                    <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+
+                        {/* Left: text + CTA */}
+                        <div className="flex-1 text-center md:text-left">
+                            <span className="inline-block text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-5"
+                                style={{ background: '#C2692A18', color: '#C2692A' }}>
+                                {dogSection.badge}
+                            </span>
+                            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
+                                {dogSection.title}<br />
+                                <span style={{ color: '#C2692A' }}>{dogSection.titleHighlight}</span>{dogSection.titleSuffix ? ` ${dogSection.titleSuffix}` : ''}
+                            </h2>
+                            <p className="text-gray-500 text-base mb-7 max-w-md mx-auto md:mx-0">{dogSection.subtitle}</p>
+
+                            {/* Sub-category chips */}
+                            {dogSection.chips?.length > 0 && (
+                                <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-8">
+                                    {dogSection.chips.map(tag => (
+                                        <Link key={tag} to="/collections/dogs"
+                                            className="text-xs font-semibold px-3 py-1.5 rounded-full border transition-all"
+                                            style={{ borderColor: '#C2692A40', color: '#C2692A', background: 'white' }}
+                                            onMouseEnter={e => { e.currentTarget.style.background = '#C2692A'; e.currentTarget.style.color = 'white'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.background = 'white'; e.currentTarget.style.color = '#C2692A'; }}>
+                                            {tag}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+
+                            <Link to={dogSection.ctaLink || '/dogs'} id="home-dogs-cta-btn"
+                                className="inline-flex items-center gap-2 px-8 py-3.5 font-bold text-white rounded-xl shadow-lg transition-all text-sm hover:-translate-y-0.5 hover:shadow-xl"
+                                style={{ background: 'linear-gradient(135deg, #C2692A, #A0521F)' }}>
+                                {dogSection.ctaText}
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </Link>
+                        </div>
+
+                        {/* Right: category icon cards */}
+                        {dogSection.cards?.length > 0 && (
+                            <div className="flex-1 grid grid-cols-2 gap-4 w-full max-w-sm md:max-w-none">
+                                {dogSection.cards.map(item => (
+                                    <Link key={item.label} to="/collections/dogs"
+                                        className="bg-white rounded-2xl p-5 flex flex-col items-start gap-2 shadow-sm border transition-all"
+                                        style={{ borderColor: 'transparent' }}
+                                        onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(194,105,42,0.15)'; e.currentTarget.style.borderColor = '#C2692A25'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'transparent'; }}>
+                                        <span className="text-3xl">{item.emoji}</span>
+                                        <span className="font-bold text-gray-800 text-sm leading-tight">{item.label}</span>
+                                        <span className="text-xs text-gray-400">{item.desc}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </section>
+            )}
 
             {/* ========== WHEN BIRDS COME HOME — DYNAMIC GALLERY ========== */}
             <GallerySection />

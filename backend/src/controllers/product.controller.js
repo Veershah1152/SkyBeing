@@ -10,7 +10,8 @@ const createProduct = asyncHandler(async (req, res) => {
         name, description, shortDescription, price, mrp, manufacturingPrice,
         category, subCategory, stock, discount, discountType, discountStartDate,
         discountEndDate, tax, sku, barcode, tags, minStock, stockStatus, trackStock,
-        shippingWeight, shippingLength, shippingWidth, shippingHeight, productType
+        shippingWeight, shippingLength, shippingWidth, shippingHeight, productType,
+        petInfo
     } = req.body;
 
     if (!name || !category || !price || !stock) {
@@ -31,6 +32,12 @@ const createProduct = asyncHandler(async (req, res) => {
         try { parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags; } catch { parsedTags = []; }
     }
 
+    // Parse petInfo if sent as JSON string
+    let parsedPetInfo = {};
+    if (petInfo) {
+        try { parsedPetInfo = typeof petInfo === 'string' ? JSON.parse(petInfo) : petInfo; } catch { parsedPetInfo = {}; }
+    }
+
     const product = await Product.create({
         name, description: description || "", shortDescription: shortDescription || "",
         price: Number(price), mrp: Number(mrp) || 0,
@@ -46,7 +53,8 @@ const createProduct = asyncHandler(async (req, res) => {
         shippingWeight: shippingWeight || "", shippingLength: shippingLength || "",
         shippingWidth: shippingWidth || "", shippingHeight: shippingHeight || "",
         productType: productType || "simple",
-        images: uploadedImages
+        images: uploadedImages,
+        petInfo: parsedPetInfo
     });
 
     return res.status(201).json(new ApiResponse(201, product, "Product created successfully"));
@@ -100,7 +108,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         category, subCategory, stock, discount, discountType, discountStartDate,
         discountEndDate, tax, sku, barcode, tags, minStock, stockStatus,
         trackStock, shippingWeight, shippingLength, shippingWidth, shippingHeight,
-        productType, variants
+        productType, variants, petInfo
     } = req.body;
 
     // Handle new image uploads
@@ -122,6 +130,10 @@ const updateProduct = asyncHandler(async (req, res) => {
     let parsedVariants = product.variants;
     if (variants) {
         try { parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants; } catch { parsedVariants = product.variants; }
+    }
+    let parsedPetInfo = product.petInfo;
+    if (petInfo) {
+        try { parsedPetInfo = typeof petInfo === 'string' ? JSON.parse(petInfo) : petInfo; } catch { parsedPetInfo = product.petInfo; }
     }
 
     const updated = await Product.findByIdAndUpdate(
@@ -155,6 +167,7 @@ const updateProduct = asyncHandler(async (req, res) => {
                 productType: productType ?? product.productType,
                 variants: parsedVariants,
                 images: updatedImages,
+                petInfo: parsedPetInfo,
             }
         },
         { new: true }

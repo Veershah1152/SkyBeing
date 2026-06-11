@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts, deleteProduct, createProduct, updateProduct } from '../../store/slices/productSlice';
 import { Plus, Trash2, Edit, Search, X, Loader2, Image as ImageIcon, Save, ArrowLeft, Tag } from 'lucide-react';
 
-const CATEGORIES = ['Feeder', 'Bird House', 'Water Feeder', 'Food', 'Accessories', 'Shelter', 'Toys'];
+const CATEGORIES = ['Feeder', 'Bird House', 'Water Feeder', 'Food', 'Accessories', 'Shelter', 'Toys', 'Dogs'];
 const TAX_OPTIONS = ['None', 'GST 5%', 'GST 12%', 'GST 18%', 'GST 28%'];
 
 // Helper: get GST % from tax label
@@ -316,6 +316,101 @@ const ImageSorter = ({ images, previewUrls, handleImageChange }) => {
     );
 };
 
+// ─── PET INFO SECTION (Optional) ──────────────────────────────────────────
+const PetInfoSection = ({ form, set }) => {
+    const petInfo = form.petInfo || { petType: '', breedSuitability: [], ageGroup: '', weightRange: '' };
+
+    const updatePetInfo = (field, val) => {
+        set('petInfo', {
+            ...petInfo,
+            [field]: val
+        });
+    };
+
+    const handleBreedAdd = (e) => {
+        if (e.key === 'Enter' && e.target.value.trim()) {
+            e.preventDefault();
+            const val = e.target.value.trim();
+            const currentBreeds = petInfo.breedSuitability || [];
+            if (!currentBreeds.includes(val)) {
+                updatePetInfo('breedSuitability', [...currentBreeds, val]);
+            }
+            e.target.value = '';
+        }
+    };
+
+    const removeBreed = (breed) => {
+        const currentBreeds = petInfo.breedSuitability || [];
+        updatePetInfo('breedSuitability', currentBreeds.filter(b => b !== breed));
+    };
+
+    return (
+        <Section title="🐾 Pet Suitability & Info (Optional)">
+            <p className="text-xs text-gray-400 mb-3">
+                Specify pet suitability details for search filters and details display.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <Label>Pet Type</Label>
+                    <SelectField
+                        value={petInfo.petType || ''}
+                        onChange={e => updatePetInfo('petType', e.target.value)}
+                    >
+                        <option value="">Select Pet Type</option>
+                        <option value="dog">Dog</option>
+                        <option value="cat">Cat</option>
+                        <option value="bird">Bird</option>
+                    </SelectField>
+                </div>
+                <div>
+                    <Label>Age Group</Label>
+                    <SelectField
+                        value={petInfo.ageGroup || ''}
+                        onChange={e => updatePetInfo('ageGroup', e.target.value)}
+                    >
+                        <option value="">Select Age Group</option>
+                        <option value="Puppy">Puppy</option>
+                        <option value="Adult">Adult</option>
+                        <option value="Senior">Senior</option>
+                        <option value="All Ages">All Ages</option>
+                    </SelectField>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <Label hint="e.g. 5–15 kg">Weight Range</Label>
+                    <Input
+                        placeholder="e.g., 5-15 kg, All Weights"
+                        value={petInfo.weightRange || ''}
+                        onChange={e => updatePetInfo('weightRange', e.target.value)}
+                    />
+                </div>
+                <div>
+                    <Label hint="Press Enter to add">Breed Suitability</Label>
+                    <Input
+                        placeholder="e.g. Golden Retriever, Labrador"
+                        onKeyDown={handleBreedAdd}
+                    />
+                </div>
+            </div>
+
+            {(petInfo.breedSuitability || []).length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                    {(petInfo.breedSuitability || []).map(breed => (
+                        <span key={breed} className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full text-xs font-medium">
+                            {breed}
+                            <button type="button" onClick={() => removeBreed(breed)} className="hover:text-red-500 transition-colors ml-0.5">
+                                <X className="w-3 h-3" />
+                            </button>
+                        </span>
+                    ))}
+                </div>
+            )}
+        </Section>
+    );
+};
+
 // ─── SIMPLE PRODUCT FORM ──────────────────────────────────────────────────
 const SimpleProductForm = ({ form, set, images, previewUrls, handleImageChange, tagInput, setTagInput }) => {
     const addTag = (e) => {
@@ -441,6 +536,7 @@ const SimpleProductForm = ({ form, set, images, previewUrls, handleImageChange, 
                     )}
                 </Section>
 
+                <PetInfoSection form={form} set={set} />
                 <DescriptionSection form={form} set={set} />
             </div>
 
@@ -605,6 +701,7 @@ const VariantProductForm = ({ form, set, images, previewUrls, handleImageChange 
             {/* LEFT */}
             <div className="space-y-6">
                 <GeneralInfoSection form={form} set={set} />
+                <PetInfoSection form={form} set={set} />
                 <DescriptionSection form={form} set={set} />
             </div>
 
@@ -783,7 +880,8 @@ const CreateProductForm = ({ onCancel, onSuccess, editingProduct }) => {
         shippingLength: editingProduct?.shippingLength || '',
         shippingWidth: editingProduct?.shippingWidth || '',
         shippingHeight: editingProduct?.shippingHeight || '',
-        variants: editingProduct?.variants || []
+        variants: editingProduct?.variants || [],
+        petInfo: editingProduct?.petInfo || { petType: '', breedSuitability: [], ageGroup: '', weightRange: '' }
     });
 
     const set = (field, val) => setForm(f => ({ ...f, [field]: val }));
@@ -809,7 +907,7 @@ const CreateProductForm = ({ onCancel, onSuccess, editingProduct }) => {
         try {
             const data = new FormData();
             Object.entries(form).forEach(([k, v]) => {
-                if (k === 'tags' || k === 'variants') data.append(k, JSON.stringify(v));
+                if (k === 'tags' || k === 'variants' || k === 'petInfo') data.append(k, JSON.stringify(v));
                 else data.append(k, v);
             });
             data.append('productType', productType);

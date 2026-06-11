@@ -84,6 +84,7 @@ const Blogs = lazy(() => import("./pages/Blogs"));
 const BlogDetails = lazy(() => import("./pages/BlogDetails"));
 const MaintenancePage = lazy(() => import("./pages/MaintenancePage"));
 const BulkOrders = lazy(() => import("./pages/BulkOrders"));
+const Dogs = lazy(() => import("./pages/Dogs"));
 const ChatWidget = lazy(() => import("./components/ui/ChatWidget"));
 
 // ── Admin Pages (lazy-loaded per route) ─────────────────────────────────────
@@ -108,6 +109,7 @@ const AdminReports = lazy(() => import("./pages/admin/AdminReports"));
 const AdminInquiries = lazy(() => import("./pages/admin/AdminInquiries"));
 const AdminSettingsPayment = lazy(() => import("./pages/admin/AdminSettingsPayment"));
 const AdminSettingsMaintenance = lazy(() => import("./pages/admin/AdminSettingsMaintenance"));
+const AdminDogPage = lazy(() => import("./pages/admin/AdminDogPage"));
 
 // ── Shared fallback ───────────────────────────────────────────────────────────
 const PageFallback = () => (
@@ -199,6 +201,7 @@ function App() {
                 <Route path="inquiries" element={<Suspense fallback={<PageFallback />}><AdminInquiries /></Suspense>} />
                 <Route path="settings/payment" element={<Suspense fallback={<PageFallback />}><AdminSettingsPayment /></Suspense>} />
                 <Route path="settings/maintenance" element={<Suspense fallback={<PageFallback />}><AdminSettingsMaintenance /></Suspense>} />
+                <Route path="dog-page" element={<Suspense fallback={<PageFallback />}><AdminDogPage /></Suspense>} />
               </Route>
             </Route>
 
@@ -235,6 +238,7 @@ function App() {
                           <Route path="/terms" element={<TermsConditions />} />
                           <Route path="/about" element={<AboutUs />} />
                           <Route path="/bulk-orders" element={<BulkOrders />} />
+                          <Route path="/dogs" element={<Dogs />} />
                         </Routes>
                       </Suspense>
                     </main>

@@ -14,6 +14,7 @@ import inquiryRouter from "./inquiry.routes.js";
 import shiprocketRouter from "./shiprocket.routes.js";
 import settingsRouter from "./settings.routes.js";
 import chatRouter from "./chat.routes.js";
+import dogPageRouter from "./dogPage.routes.js";
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use("/inquiries", inquiryRouter);
 router.use("/shiprocket", shiprocketRouter);
 router.use("/settings", settingsRouter);
 router.use("/chat", chatRouter);
+router.use("/dog-page", dogPageRouter);
 
 export default router;
