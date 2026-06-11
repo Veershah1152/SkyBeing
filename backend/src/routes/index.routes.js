@@ -13,6 +13,7 @@ import blogRouter from "./blog.routes.js";
 import inquiryRouter from "./inquiry.routes.js";
 import shiprocketRouter from "./shiprocket.routes.js";
 import settingsRouter from "./settings.routes.js";
+import chatRouter from "./chat.routes.js";
 
 const router = Router();
 
@@ -29,5 +30,6 @@ router.use("/blogs", blogRouter);
 router.use("/inquiries", inquiryRouter);
 router.use("/shiprocket", shiprocketRouter);
 router.use("/settings", settingsRouter);
+router.use("/chat", chatRouter);
 
 export default router;

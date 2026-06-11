@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config({ path: './.env' });
 
-import connectDB from "./config/db.js";
+import { connectDB } from "./config/db.js";
 import { app } from "./app.js";
 
 // Always start the server, even if DB connection fails

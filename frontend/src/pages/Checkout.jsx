@@ -5,6 +5,7 @@ import { fetchCart, clearCartLocal } from '../store/slices/cartSlice';
 import api from '../api/axios';
 import { useToast } from '../components/ui/Toast';
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -176,27 +177,11 @@ const Checkout = () => {
             <BannerCarousel
                 page="checkout"
                 fallback={
-                    <div className="pt-20 pb-16 text-center">
-                        <div className="flex justify-center items-center gap-2 mb-3">
-                            <h1 className="text-4xl text-black font-normal tracking-wide relative">
-                                Checkout
-                                <div className="absolute -top-6 -right-10 w-12 h-12 opacity-80 pointer-events-none">
-                                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M10,80 Q40,60 80,30" stroke="#7E9F6E" strokeWidth="3" strokeLinecap="round" />
-                                        <circle cx="30" cy="65" r="4" fill="#7E9F6E" />
-                                        <circle cx="55" cy="45" r="4" fill="#7E9F6E" />
-                                        <circle cx="75" cy="20" r="5" fill="#7E9F6E" />
-                                        <path d="M90,30 Q95,45 80,55" fill="#C9A388" />
-                                    </svg>
-                                </div>
-                            </h1>
-                        </div>
-                        <p className="text-[13px] font-medium text-gray-400">
-                            <Link to="/" className="hover:text-black transition">Home</Link> <span className="mx-1">/</span>
-                            <Link to="/shop" className="hover:text-black transition">Shop</Link> <span className="mx-1">/</span>
-                            <span className="text-black font-semibold">Shopping Cart</span>
-                        </p>
-                    </div>
+                    <PageHero
+                        title="Checkout"
+                        subtitle="Enter your delivery details and secure payment option to complete your purchase."
+                        badgeText="💳 Secure Checkout"
+                    />
                 }
             />
 

@@ -5,6 +5,7 @@ import BannerCarousel from '../components/ui/BannerCarousel';
 import api from '../api/axios';
 import { useToast } from '../components/ui/Toast';
 import useSEO from '../hooks/useSEO';
+import PageHero from '../components/ui/PageHero';
 
 const Contact = () => {
     useSEO({
@@ -58,14 +59,11 @@ const Contact = () => {
                 page="contact"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">Contact</h1>
-                            <p className="text-lg text-black font-semibold">
-                                <Link to="/" className="hover:underline transition">Home</Link> <span className="mx-2">&gt;</span> Contact
-                            </p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Contact Us"
+                        subtitle="Have questions or need support? Contact the SkyBeings team. We are here to help you set up the perfect backyard bird sanctuary."
+                        badgeText="📞 We're here to help"
+                    />
                 }
             />
 

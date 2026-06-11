@@ -1,4 +1,5 @@
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const ReturnPolicy = () => {
     return (
@@ -8,14 +9,12 @@ const ReturnPolicy = () => {
                 page="legal"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">Return &amp; Refund Policy</h1>
-                            <p className="text-lg text-black font-semibold">
-                                Home <span className="mx-2">&gt;</span> Return Policy
-                            </p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Return & Refund Policy"
+                        breadcrumbText="Return Policy"
+                        subtitle="At SkyBeings, we aim to provide the best possible experience for our customers."
+                        badgeText="🔄 Easy returns & cancellations"
+                    />
                 }
             />
 

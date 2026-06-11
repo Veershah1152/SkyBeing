@@ -3,6 +3,7 @@ import BannerCarousel from '../components/ui/BannerCarousel';
 import { Leaf, HeartHandshake, Sprout, Bird } from 'lucide-react';
 import api from '../api/axios';
 import useSEO from '../hooks/useSEO';
+import PageHero from '../components/ui/PageHero';
 
 const AboutUs = () => {
     useSEO({
@@ -30,15 +31,11 @@ const AboutUs = () => {
                 page="about"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1555169062-013468b47726?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">About Us</h1>
-                            <p className="text-lg text-black font-semibold">
-                                Home <span className="mx-2">&gt;</span> About Us
-                            </p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="About Us"
+                        subtitle="Learn about SkyBeings, our mission to support local avian life in India, and how we craft our high-quality bird feeders, houses, and water sanctuaries."
+                        badgeText="🌿 Crafting sanctuaries since 2021"
+                    />
                 }
             />
 

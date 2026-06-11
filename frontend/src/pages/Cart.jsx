@@ -4,6 +4,7 @@ import { Trash } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCart, updateCartQuantity, removeFromCart } from '../store/slices/cartSlice';
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const Cart = () => {
     const dispatch = useDispatch();
@@ -22,13 +23,12 @@ const Cart = () => {
             <BannerCarousel
                 page="cart"
                 fallback={
-                    <div className="h-[250px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center flex flex-col items-center">
-                            <div className="w-12 h-12 bg-black font-extrabold text-white flex items-center justify-center rounded-full mb-2">S</div>
-                            <h1 className="text-4xl text-black mb-2 font-medium tracking-wide">Cart</h1>
-                            <p className="text-sm text-black font-medium tracking-wider"><Link to="/" className="font-bold hover:underline transition">Home</Link> &gt; Cart</p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Shopping Cart"
+                        breadcrumbText="Cart"
+                        subtitle="Review and modify the items in your cart before checking out."
+                        badgeText="🛒 Your Selection"
+                    />
                 }
             />
 

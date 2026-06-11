@@ -1,4 +1,5 @@
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const TermsConditions = () => {
     return (
@@ -8,14 +9,11 @@ const TermsConditions = () => {
                 page="legal"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">Terms &amp; Conditions</h1>
-                            <p className="text-lg text-black font-semibold">
-                                Home <span className="mx-2">&gt;</span> Terms &amp; Conditions
-                            </p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Terms & Conditions"
+                        subtitle="Rules, guidelines, and terms of service for visiting and ordering from our website."
+                        badgeText="⚖️ User Agreement"
+                    />
                 }
             />
 

@@ -84,6 +84,7 @@ const Blogs = lazy(() => import("./pages/Blogs"));
 const BlogDetails = lazy(() => import("./pages/BlogDetails"));
 const MaintenancePage = lazy(() => import("./pages/MaintenancePage"));
 const BulkOrders = lazy(() => import("./pages/BulkOrders"));
+const ChatWidget = lazy(() => import("./components/ui/ChatWidget"));
 
 // ── Admin Pages (lazy-loaded per route) ─────────────────────────────────────
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -279,6 +280,11 @@ function App() {
                         50% { box-shadow: 0 4px 32px rgba(37,211,102,0.75); transform: scale(1.04); }
                       }
                     `}</style>
+
+                    {/* ── Skye AI Chat Widget (bottom-left) ─────────────── */}
+                    <Suspense fallback={null}>
+                      <ChatWidget />
+                    </Suspense>
                   </>
                 </MaintenanceGuard>
               }

@@ -11,6 +11,8 @@
 # ─── Cloudflare Wrangler ─────────────────────────────────────────────────────
 .wrangler/
 **/wrangler.toml.local
+.secrets.json
+**/.secrets.json
 
 
 # ─── Dependencies ────────────────────────────────────────────────────────────

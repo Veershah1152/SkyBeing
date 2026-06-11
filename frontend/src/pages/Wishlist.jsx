@@ -5,6 +5,7 @@ import { toggleWishlist } from '../store/slices/wishlistSlice';
 import { addToCart } from '../store/slices/cartSlice';
 import { useState } from 'react';
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const Wishlist = () => {
     const dispatch = useDispatch();
@@ -28,14 +29,11 @@ const Wishlist = () => {
             <BannerCarousel
                 page="wishlist"
                 fallback={
-                    <div className="h-[200px] bg-[#FCECD8] w-full flex flex-col items-center justify-center">
-                        <h1 className="text-4xl font-bold text-black mb-2">Wishlist</h1>
-                        <p className="text-black font-semibold text-sm">
-                            <Link to="/" className="hover:underline">Home</Link>
-                            <span className="mx-2">›</span>
-                            Wishlist
-                        </p>
-                    </div>
+                    <PageHero
+                        title="Wishlist"
+                        subtitle="Keep track of your favorite items for your bird sanctuary."
+                        badgeText="💖 Saved Products"
+                    />
                 }
             />
 

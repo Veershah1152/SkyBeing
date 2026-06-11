@@ -1,4 +1,5 @@
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const PrivacyPolicy = () => {
     return (
@@ -8,14 +9,11 @@ const PrivacyPolicy = () => {
                 page="legal"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">Privacy Policy</h1>
-                            <p className="text-lg text-black font-semibold">
-                                Home <span className="mx-2">&gt;</span> Privacy Policy
-                            </p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Privacy Policy"
+                        subtitle="SkyBeings is committed to protecting all the information you share with us."
+                        badgeText="🔒 Secure & Private"
+                    />
                 }
             />
 

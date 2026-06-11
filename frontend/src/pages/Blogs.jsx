@@ -5,6 +5,7 @@ import api from '../api/axios';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import BannerCarousel from '../components/ui/BannerCarousel';
 import useSEO from '../hooks/useSEO';
+import PageHero from '../components/ui/PageHero';
 
 const Blogs = () => {
     useSEO({
@@ -32,13 +33,11 @@ const Blogs = () => {
             <BannerCarousel
                 page="blog"
                 fallback={
-                    <div className="bg-[#A77B51]/10 pt-28 pb-16 text-center">
-                        <BookOpen className="w-10 h-10 text-[#A77B51] mx-auto mb-4" />
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-[#3A3A3A] mb-4">Our Journal</h1>
-                        <p className="text-lg text-gray-700 font-medium max-w-xl mx-auto px-4">
-                            Stories, guides, and tips for nature lovers and backyard birders.
-                        </p>
-                    </div>
+                    <PageHero
+                        title="Our Journal"
+                        subtitle="Stories, guides, and tips for nature lovers and backyard birders."
+                        badgeText="📖 SkyBeings logs"
+                    />
                 }
             />
 

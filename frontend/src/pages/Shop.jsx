@@ -8,6 +8,7 @@ import BannerCarousel from '../components/ui/BannerCarousel';
 import { Search, SlidersHorizontal, ChevronDown, Star, X, Heart, ShoppingCart } from 'lucide-react';
 import { useToast } from '../components/ui/Toast';
 import useSEO from '../hooks/useSEO';
+import PageHero from '../components/ui/PageHero';
 
 const PRODUCTS_PER_PAGE = 8;
 
@@ -252,12 +253,11 @@ const Shop = () => {
                 page="shop"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">Shop</h1>
-                            <p className="text-lg text-black font-semibold"><Link to="/" className="hover:underline transition">Home</Link> <span className="mx-2">&gt;</span> Shop</p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Shop"
+                        subtitle="Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders."
+                        badgeText="🛒 Premium Bird Supplies"
+                    />
                 }
             />
 

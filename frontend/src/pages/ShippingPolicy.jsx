@@ -1,4 +1,5 @@
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const ShippingPolicy = () => {
     return (
@@ -8,14 +9,11 @@ const ShippingPolicy = () => {
                 page="legal"
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
-                    <div className="h-[300px] bg-[#FCECD8] w-full flex flex-col items-center justify-center relative overflow-hidden">
-                        <div className="relative z-10 text-center">
-                            <h1 className="text-5xl font-bold text-black mb-4 tracking-wide">Shipping Policy</h1>
-                            <p className="text-lg text-black font-semibold">
-                                Home <span className="mx-2">&gt;</span> Shipping Policy
-                            </p>
-                        </div>
-                    </div>
+                    <PageHero
+                        title="Shipping Policy"
+                        subtitle="Understand our shipping methods, rates, and delivery timelines across India and globally."
+                        badgeText="📦 Pan-India & Global Delivery"
+                    />
                 }
             />
 

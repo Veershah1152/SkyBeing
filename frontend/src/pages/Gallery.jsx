@@ -3,6 +3,7 @@ import { Camera, X } from 'lucide-react';
 import api from '../api/axios';
 import SkeletonLoader from '../components/ui/SkeletonLoader';
 import BannerCarousel from '../components/ui/BannerCarousel';
+import PageHero from '../components/ui/PageHero';
 
 const Gallery = () => {
     const [images, setImages] = useState([]);
@@ -29,13 +30,11 @@ const Gallery = () => {
             <BannerCarousel
                 page="gallery"
                 fallback={
-                    <div className="bg-[#FCECD8] pt-28 pb-16 text-center shadow-inner">
-                        <Camera className="w-10 h-10 text-skyBrown mx-auto mb-4 opacity-80" />
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-[#3A3A3A] mb-4">Our Birds Gallery</h1>
-                        <p className="text-lg text-gray-700 font-medium max-w-xl mx-auto px-4">
-                            A beautiful collection of our feathered visitors captured in their natural elements.
-                        </p>
-                    </div>
+                    <PageHero
+                        title="Our Birds Gallery"
+                        subtitle="A beautiful collection of our feathered visitors captured in their natural elements."
+                        badgeText="📷 Captured moments"
+                    />
                 }
             />
 
