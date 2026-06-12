@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+  <!-- ── Core Pages ─────────────────────────────────────────────────────── -->
   <url>
-    <loc>https://skybeings.in</loc>
+    <loc>https://skybeings.in/</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -11,13 +12,13 @@
     <loc>https://skybeings.in/shop</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://skybeings.in/gallery</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://skybeings.in/blogs</loc>
@@ -26,65 +27,77 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://skybeings.in/cart</loc>
+    <loc>https://skybeings.in/about</loc>
     <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://skybeings.in/checkout</loc>
-    <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://skybeings.in/login</loc>
-    <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://skybeings.in/contact</loc>
     <lastmod>2026-06-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- ── SEO Collection Pages ───────────────────────────────────────────── -->
+  <url>
+    <loc>https://skybeings.in/collections/bird-feeders</loc>
+    <lastmod>2026-06-11</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://skybeings.in/wishlist</loc>
+    <loc>https://skybeings.in/collections/water-feeders</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://skybeings.in/collections/bird-houses</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://skybeings.in/collections/accessories</loc>
     <lastmod>2026-06-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://skybeings.in/collections/best-sellers</loc>
+    <lastmod>2026-06-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- ── Policy Pages ───────────────────────────────────────────────────── -->
   <url>
     <loc>https://skybeings.in/privacy-policy</loc>
     <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://skybeings.in/return-policy</loc>
     <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://skybeings.in/shipping-policy</loc>
     <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
   <url>
     <loc>https://skybeings.in/terms</loc>
     <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
-  <url>
-    <loc>https://skybeings.in/about</loc>
-    <lastmod>2026-06-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+
+  <!-- ── Product Pages ──────────────────────────────────────────────────── -->
   <url>
     <loc>https://skybeings.in/product/69a556d23a35281fe94e4fb2</loc>
     <lastmod>2026-06-10</lastmod>
@@ -121,10 +134,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
+
+  <!-- ── Blog Posts ─────────────────────────────────────────────────────── -->
   <url>
     <loc>https://skybeings.in/blogs/how-bird-feeders-help-save-urban-birds-1772467396693</loc>
     <lastmod>2026-06-10</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
 </urlset>

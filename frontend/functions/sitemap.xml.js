@@ -7,21 +7,25 @@ export async function onRequest(context) {
     }
 
     const domain = "https://skybeings.in";
+    // Only include publicly indexable pages — no /cart, /checkout, /login, /wishlist
     const staticPages = [
-        "",
-        "/shop",
-        "/gallery",
-        "/blogs",
-        "/cart",
-        "/checkout",
-        "/login",
-        "/contact",
-        "/wishlist",
-        "/privacy-policy",
-        "/return-policy",
-        "/shipping-policy",
-        "/terms",
-        "/about",
+        { path: "",                              priority: "1.0", changefreq: "daily"   },
+        { path: "/shop",                         priority: "0.9", changefreq: "weekly"  },
+        { path: "/blogs",                        priority: "0.8", changefreq: "weekly"  },
+        { path: "/gallery",                      priority: "0.7", changefreq: "weekly"  },
+        { path: "/about",                        priority: "0.6", changefreq: "monthly" },
+        { path: "/contact",                      priority: "0.5", changefreq: "monthly" },
+        // SEO collection pages
+        { path: "/collections/bird-feeders",    priority: "0.9", changefreq: "weekly"  },
+        { path: "/collections/water-feeders",   priority: "0.9", changefreq: "weekly"  },
+        { path: "/collections/bird-houses",     priority: "0.9", changefreq: "weekly"  },
+        { path: "/collections/accessories",     priority: "0.8", changefreq: "weekly"  },
+        { path: "/collections/best-sellers",    priority: "0.8", changefreq: "weekly"  },
+        // Policy pages (low priority)
+        { path: "/privacy-policy",              priority: "0.3", changefreq: "yearly"  },
+        { path: "/return-policy",               priority: "0.3", changefreq: "yearly"  },
+        { path: "/shipping-policy",             priority: "0.3", changefreq: "yearly"  },
+        { path: "/terms",                       priority: "0.3", changefreq: "yearly"  },
     ];
 
     let products = [];
@@ -52,13 +56,13 @@ export async function onRequest(context) {
     const now = new Date().toISOString().split('T')[0];
 
     // 1. Static Pages
-    staticPages.forEach(path => {
+    staticPages.forEach(({ path, priority, changefreq }) => {
         xmlUrls.push(`
   <url>
     <loc>${domain}${path}</loc>
     <lastmod>${now}</lastmod>
-    <changefreq>${path === "" ? "daily" : "weekly"}</changefreq>
-    <priority>${path === "" ? "1.0" : "0.8"}</priority>
+    <changefreq>${changefreq}</changefreq>
+    <priority>${priority}</priority>
   </url>`);
     });
 
