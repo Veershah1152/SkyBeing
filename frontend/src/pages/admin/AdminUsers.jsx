@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Loader2, User, ShieldAlert, ShieldCheck, Mail, Calendar, Ban } from 'lucide-react';
+import { Search, Loader2, User, ShieldAlert, ShieldCheck, Mail, Calendar, Ban, Trash2 } from 'lucide-react';
 import api from '../../api/axios';
 
 const AdminUsers = () => {
@@ -46,11 +46,11 @@ const AdminUsers = () => {
     };
 
     const deleteUser = async (userId) => {
-        if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return;
+        if (!window.confirm("Are you sure you want to delete this user? They will be permanently blocked.")) return;
 
         try {
             await api.delete(`/admin/users/${userId}`);
-            // Optimistic update
+            // Remove from local state immediately
             setUsers(users.filter(u => u._id !== userId));
         } catch (error) {
             alert('Failed to delete user');
@@ -171,8 +171,7 @@ const AdminUsers = () => {
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                     title="Permanently Delete"
                                                 >
-                                                    <User className="w-4 h-4" />
-                                                    <span className="sr-only">Delete</span>
+                                                    <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         </td>

@@ -282,6 +282,7 @@ const OrderDetailsModal = ({ order, onClose }) => {
 // ─── Main AdminOrders Component ────────────────────────────────────────────
 const AdminOrders = () => {
     const [orders, setOrders] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [status, setStatus] = useState('idle');
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedStatus, setSelectedStatus] = useState('');
@@ -304,9 +305,13 @@ const AdminOrders = () => {
     const fetchOrders = async () => {
         setStatus('loading');
         try {
-            const query = selectedStatus ? `?status=${selectedStatus}` : '';
+            // Fetch all orders (limit=500 covers any realistic order volume)
+            const query = selectedStatus
+                ? `?status=${selectedStatus}&limit=500`
+                : '?limit=500';
             const res = await api.get(`/admin/orders${query}`);
             setOrders(res.data.data.orders);
+            setTotalCount(res.data.data.totalCount ?? res.data.data.orders.length);
             setStatus('succeeded');
         } catch (error) {
             console.error(error);
@@ -430,7 +435,7 @@ const AdminOrders = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-                        Orders <span className="text-gray-400 text-lg font-normal mb-1 ml-2">({orders.length})</span>
+                        Orders <span className="text-gray-400 text-lg font-normal mb-1 ml-2">({totalCount})</span>
                     </h1>
                     <p className="mt-1 text-sm text-gray-500">Showing confirmed orders only (COD &amp; paid online).</p>
                 </div>

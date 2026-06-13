@@ -1,3 +1,11 @@
 /*
-  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Cross-Origin-Opener-Policy: unsafe-none
   Cross-Origin-Embedder-Policy: unsafe-none
+
+/sitemap.xml
+  Content-Type: application/xml; charset=utf-8
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600

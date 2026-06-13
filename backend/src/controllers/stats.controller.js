@@ -48,21 +48,41 @@ export const getSiteStats = asyncHandler(async (req, res) => {
     const last7Start = days(6);
     const last30Start = days(29);
 
-    // ── Visit counts ──────────────────────────────────────────────────────────
+    // ── Visit counts (raw page views) ─────────────────────────────────────────
     const todayVisits = await Visit.countDocuments({ date: todayStr });
     const yesterdayVisits = await Visit.countDocuments({ date: yesterdayStr });
 
-    // Unique sessions today (one session = unique browser visit)
+    // ── Unique PERSONS (deduplicated by sessionId — one person = one session) ──
+    // sessionId is set once per browser session in sessionStorage, so it stays
+    // constant as the same person navigates. This is the "real" unique visitor count.
     const uniqueSessionsToday = await Visit.distinct("sessionId", {
         date: todayStr,
         sessionId: { $ne: "" },
     });
-    const uniqueVisitorsToday = uniqueSessionsToday.length;
+    const uniquePersonsToday = Math.max(
+        uniqueSessionsToday.length,
+        // Fallback to unique IPs if no session IDs recorded yet
+        (await Visit.distinct("ip", { date: todayStr })).length
+    );
 
-    // Unique IPs today (fallback for unique visitors)
-    const uniqueIPsToday = await Visit.distinct("ip", { date: todayStr });
+    // Legacy field kept for backward compat — same as uniquePersonsToday
+    const uniqueVisitorsToday = uniquePersonsToday;
 
-    // Last 7 days
+    // Unique persons — 7 days
+    const uniqueSessions7d = await Visit.distinct("sessionId", {
+        date: { $gte: last7Start },
+        sessionId: { $ne: "" },
+    });
+    const uniquePersons7d = uniqueSessions7d.length;
+
+    // Unique persons — 30 days
+    const uniqueSessions30d = await Visit.distinct("sessionId", {
+        date: { $gte: last30Start },
+        sessionId: { $ne: "" },
+    });
+    const uniquePersons30d = uniqueSessions30d.length;
+
+    // Last 7 / 30 days raw page views
     const last7Visits = await Visit.countDocuments({ date: { $gte: last7Start } });
     const last30Visits = await Visit.countDocuments({ date: { $gte: last30Start } });
 
@@ -145,7 +165,10 @@ export const getSiteStats = asyncHandler(async (req, res) => {
             {
                 todayVisits,
                 yesterdayVisits,
-                uniqueVisitorsToday: Math.max(uniqueVisitorsToday, uniqueIPsToday.length),
+                uniqueVisitorsToday,
+                uniquePersonsToday,
+                uniquePersons7d,
+                uniquePersons30d,
                 last7Visits,
                 last30Visits,
                 todayOrders,

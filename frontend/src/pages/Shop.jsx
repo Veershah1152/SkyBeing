@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { Link, useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../store/slices/productSlice';
 import { addToCart } from '../store/slices/cartSlice';
@@ -169,12 +169,17 @@ const Shop = () => {
     const slugCategory = categorySlug ? (SLUG_TO_CATEGORY[categorySlug] || 'all') : null;
     const initialCategory = slugCategory || location.state?.category || 'all';
 
+    // ── Detect if we should redirect /shop (no slug) to canonical collection ──
+    // We compute this flag early but the actual redirect is in the JSX return
+    // so that all hooks remain unconditional (React rules-of-hooks).
+    const shouldRedirect = !categorySlug && !location.state?.category && !location.search;
+
     // ── Per-collection SEO ────────────────────────────────────────────────────
     const collectionSeo = COLLECTION_SEO[initialCategory] || {};
     useSEO({
-        title: collectionSeo.title || 'Shop Premium Bird Supplies',
-        description: collectionSeo.description || 'Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders. Provide premium comfort to local wild birds.',
-        canonical: collectionSeo.canonical || 'https://skybeings.in/shop',
+        title: collectionSeo.title || 'Shop All Bird Supplies Online India — SkyBeings',
+        description: collectionSeo.description || 'Browse premium bird feeders, water feeders, bird houses and accessories at SkyBeings. Quality products for bird lovers across India. Fast shipping, easy returns.',
+        canonical: collectionSeo.canonical || `https://skybeings.in${location.pathname}`,
     });
 
     const { items: products, status } = useSelector(state => state.products);
@@ -257,6 +262,62 @@ const Shop = () => {
         currentPage * PRODUCTS_PER_PAGE
     );
 
+    // ── ItemList JSON-LD structured data ─────────────────────────────────────
+    // Injected dynamically once products load so Googlebot sees real product
+    // signals and does NOT classify the page as a Soft 404.
+    const ldScriptRef = useRef(null);
+    useEffect(() => {
+        if (status !== 'succeeded' || filteredProducts.length === 0) return;
+        const itemList = {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: collectionSeo.title || 'SkyBeings Shop',
+            url: collectionSeo.canonical || `https://skybeings.in${location.pathname}`,
+            numberOfItems: filteredProducts.length,
+            itemListElement: filteredProducts.slice(0, 20).map((p, idx) => ({
+                '@type': 'ListItem',
+                position: idx + 1,
+                item: {
+                    '@type': 'Product',
+                    '@id': `https://skybeings.in/product/${p._id}`,
+                    name: p.name,
+                    url: `https://skybeings.in/product/${p._id}`,
+                    image: p.images?.[0] || '',
+                    description: p.description || p.name,
+                    offers: {
+                        '@type': 'Offer',
+                        price: p.price,
+                        priceCurrency: 'INR',
+                        availability: p.stock > 0
+                            ? 'https://schema.org/InStock'
+                            : 'https://schema.org/OutOfStock',
+                    },
+                    ...(p.ratings > 0 && {
+                        aggregateRating: {
+                            '@type': 'AggregateRating',
+                            ratingValue: p.ratings,
+                            reviewCount: p.reviews?.length || 1,
+                        },
+                    }),
+                },
+            })),
+        };
+        if (!ldScriptRef.current) {
+            ldScriptRef.current = document.createElement('script');
+            ldScriptRef.current.type = 'application/ld+json';
+            ldScriptRef.current.id = 'collection-itemlist-ld';
+            document.head.appendChild(ldScriptRef.current);
+        }
+        ldScriptRef.current.textContent = JSON.stringify(itemList);
+        return () => {
+            if (ldScriptRef.current) {
+                ldScriptRef.current.remove();
+                ldScriptRef.current = null;
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [status, filteredProducts.length, collectionSeo.canonical, location.pathname]);
+
     const handleAddToCart = async (prod) => {
         try {
             setAddingId(prod._id);
@@ -271,7 +332,9 @@ const Shop = () => {
 
     const currentSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label;
 
-    return (
+    return shouldRedirect
+        ? <Navigate to="/collections/bird-feeders" replace />
+        : (
         <div className="bg-white min-h-screen">
 
             {/* ── Banner (admin managed or fallback) ─────────────────── */}
@@ -280,12 +343,41 @@ const Shop = () => {
                 height="md:h-[300px] lg:h-[400px]"
                 fallback={
                     <PageHero
-                        title="Shop"
-                        subtitle="Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders."
+                        title={collectionSeo.title?.replace(' | SkyBeings', '') || 'Shop Premium Bird Supplies'}
+                        subtitle={collectionSeo.description || 'Browse our catalog of premium bird feeders, water feeders, and bird houses. Quality products for bird lovers across India.'}
                         badgeText="🛒 Premium Bird Supplies"
                     />
                 }
             />
+
+            {/* ── Static SEO heading — visible immediately, before products load ──
+                This ensures Google never sees a blank/empty page (Soft 404 trigger).
+                H1 matches the page title for perfect keyword alignment.             ── */}
+            {collectionSeo.title && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-0">
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-[#3A3A3A] mb-2">
+                        {collectionSeo.title}
+                    </h1>
+                    <p className="text-gray-500 text-sm max-w-3xl">
+                        {collectionSeo.description}
+                    </p>
+                </div>
+            )}
+
+            {/* ── noscript fallback: ensures Googlebot (no-JS mode) sees product links ── */}
+            <noscript>
+                <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+                    <h1>{collectionSeo.title || 'Shop Bird Feeders & Supplies | SkyBeings'}</h1>
+                    <p>{collectionSeo.description}</p>
+                    <ul>
+                        <li><a href="/collections/bird-feeders">Bird Feeders</a></li>
+                        <li><a href="/collections/water-feeders">Water Feeders</a></li>
+                        <li><a href="/collections/bird-houses">Bird Houses</a></li>
+                        <li><a href="/collections/accessories">Accessories</a></li>
+                        <li><a href="/collections/best-sellers">Best Sellers</a></li>
+                    </ul>
+                </div>
+            </noscript>
 
             {/* ── Filter Ribbon ───────────────────────────────────────── */}
             <div className="bg-[#A77B51] w-full text-white text-sm font-semibold tracking-wider shadow-md">

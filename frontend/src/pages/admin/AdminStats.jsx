@@ -164,9 +164,10 @@ const AdminStats = () => {
             icon: Eye, iconBg: 'bg-skyGreen',
         },
         {
-            label: 'Unique Visitors Today',
-            value: fmtNum(data.uniqueVisitorsToday),
-            sub: `${fmtNum(data.last7Visits)} views this week`,
+            // uniquePersonsToday = distinct sessionIds today (one real person = one session)
+            label: 'Persons Today',
+            value: fmtNum(data.uniquePersonsToday ?? data.uniqueVisitorsToday),
+            sub: `${fmtNum(data.uniquePersons7d ?? 0)} unique this week`,
             trend: 'up',
             icon: Users, iconBg: 'bg-skyBrown',
         },
@@ -189,7 +190,7 @@ const AdminStats = () => {
         {
             label: 'Revenue Today',
             value: fmtRupee(data.todayRevenue),
-            sub: `${fmtNum(data.last30Visits)} views this month`,
+            sub: `${fmtNum(data.uniquePersons30d ?? 0)} unique this month`,
             trend: data.todayRevenue > 0 ? 'up' : 'neutral',
             icon: DollarSign, iconBg: 'bg-skyGreen',
         },
@@ -340,18 +341,24 @@ const AdminStats = () => {
 
             {/* Stats Summary Row */}
             {data && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {[
-                        { label: 'Views Today', value: fmtNum(data.todayVisits), bg: 'bg-skyGreen' },
-                        { label: 'Views (7 Days)', value: fmtNum(data.last7Visits), bg: 'bg-skyBrown' },
-                        { label: 'Views (30 Days)', value: fmtNum(data.last30Visits), bg: 'bg-amber-500' },
-                        { label: 'Orders Today', value: fmtNum(data.todayOrders), bg: 'bg-emerald-500' },
-                    ].map(s => (
-                        <div key={s.label} className={`${s.bg} rounded-2xl p-4 text-white`}>
-                            <p className="text-2xl font-bold">{s.value}</p>
-                            <p className="text-xs opacity-80 mt-1">{s.label}</p>
-                        </div>
-                    ))}
+                <div className="space-y-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {[
+                            { label: 'Page Views Today', value: fmtNum(data.todayVisits), bg: 'bg-skyGreen' },
+                            { label: 'Persons Today', value: fmtNum(data.uniquePersonsToday ?? data.uniqueVisitorsToday), bg: 'bg-skyBrown' },
+                            { label: 'Unique Persons (7d)', value: fmtNum(data.uniquePersons7d ?? 0), bg: 'bg-amber-500' },
+                            { label: 'Orders Today', value: fmtNum(data.todayOrders), bg: 'bg-emerald-500' },
+                        ].map(s => (
+                            <div key={s.label} className={`${s.bg} rounded-2xl p-4 text-white`}>
+                                <p className="text-2xl font-bold">{s.value}</p>
+                                <p className="text-xs opacity-80 mt-1">{s.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Explanation note */}
+                    <p className="text-xs text-gray-400 px-1">
+                        💡 <strong>Page Views</strong> counts every page navigation. <strong>Persons</strong> counts unique visitors by session — one person browsing 10 pages = 1 person.
+                    </p>
                 </div>
             )}
         </div>

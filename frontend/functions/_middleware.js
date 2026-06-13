@@ -23,7 +23,7 @@ const ROUTE_META = {
         title: "Shop Premium Bird Supplies | SkyBeings",
         description:
             "Browse our catalog of custom-designed bird feeders, durable handcrafted bird houses, and fresh water feeders. Provide premium comfort to local wild birds.",
-        canonical: "https://skybeings.in/shop",
+        canonical: "https://skybeings.in/collections/bird-feeders",
     },
     "/gallery": {
         title: "Bird Gallery — SkyBeings",
@@ -99,6 +99,12 @@ const ROUTE_META = {
         description:
             "Discover our top-rated, best-selling bird feeders, water feeders and bird houses at SkyBeings.",
         canonical: "https://skybeings.in/collections/best-sellers",
+    },
+    "/collections/dogs": {
+        title: "Buy Premium Dog Products Online India — SkyBeings",
+        description:
+            "Shop dog food, toys, grooming supplies, collars, leashes, beds and health products at SkyBeings. Premium dog essentials delivered across India with fast shipping.",
+        canonical: "https://skybeings.in/collections/dogs",
     },
 };
 

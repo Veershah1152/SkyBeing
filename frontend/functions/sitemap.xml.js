@@ -8,6 +8,8 @@ export async function onRequest(context) {
 
     const domain = "https://skybeings.in";
     // Only include publicly indexable pages — no /cart, /checkout, /login, /wishlist
+    // IMPORTANT: Every <loc> must match the canonical URL exactly.
+    // /shop 301-redirects to /collections/bird-feeders, so we list the canonical directly.
     const staticPages = [
         { path: "",                              priority: "1.0", changefreq: "daily"   },
         { path: "/shop",                         priority: "0.9", changefreq: "weekly"  },
@@ -15,12 +17,13 @@ export async function onRequest(context) {
         { path: "/gallery",                      priority: "0.7", changefreq: "weekly"  },
         { path: "/about",                        priority: "0.6", changefreq: "monthly" },
         { path: "/contact",                      priority: "0.5", changefreq: "monthly" },
-        // SEO collection pages
+        // Canonical collection pages (directly — NOT via /shop redirect)
         { path: "/collections/bird-feeders",    priority: "0.9", changefreq: "weekly"  },
         { path: "/collections/water-feeders",   priority: "0.9", changefreq: "weekly"  },
         { path: "/collections/bird-houses",     priority: "0.9", changefreq: "weekly"  },
         { path: "/collections/accessories",     priority: "0.8", changefreq: "weekly"  },
         { path: "/collections/best-sellers",    priority: "0.8", changefreq: "weekly"  },
+        { path: "/collections/dogs",            priority: "0.7", changefreq: "weekly"  },
         // Policy pages (low priority)
         { path: "/privacy-policy",              priority: "0.3", changefreq: "yearly"  },
         { path: "/return-policy",               priority: "0.3", changefreq: "yearly"  },

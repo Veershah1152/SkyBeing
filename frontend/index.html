@@ -2,71 +2,199 @@
 <html lang="en">
 
 <head>
-  <!-- Google tag (gtag.js) -->
+  <!-- Google Tag Manager (must load before GA4 so it controls the dataLayer) -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+  j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+  f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-W3WQH94D');
+  </script>
+
+  <!-- Google Analytics 4 (gtag.js) — loaded immediately for GSC/GA verification -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y6SJEH301S"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-Y6SJEH301S');
+    gtag('config', 'G-Y6SJEH301S', {
+      'linker': {
+        'domains': ['skybeings.in', 'www.skybeings.in']
+      },
+      'cookie_flags': 'SameSite=None;Secure'
+    });
+    // Exclude Cloudflare preview URLs from analytics data
+    if (window.location.hostname.endsWith('.pages.dev')) {
+      gtag('config', 'G-Y6SJEH301S', { 'send_page_view': false });
+    }
   </script>
 
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/logo-cropped.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0e870d" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 
-  <!-- ── Primary SEO ──────────────────────────────────────────────────────── -->
-  <title>Premium Bird Feeders &amp; Houses Online India | SkyBeings</title>
-  <meta name="description" content="Shop premium, all-weather bird feeders, water feeders, and bird houses at SkyBeings. Bring nature to your window with durable balcony and garden bird accessories." />
-  <meta name="keywords" content="bird feeders India, window bird feeder, hanging bird feeder, bird house online, water feeder for birds, balcony bird feeder, garden bird accessories" />
+  <!-- ── Primary SEO ───────────────────────────────────────────────────────────────────────────── -->
+  <title>SkyBeings — Premium Bird Feeders, Houses &amp; Water Feeders Online India</title>
+  <meta name="description" content="Buy premium bird feeders, bird houses &amp; water feeders online in India at SkyBeings. All-weather balcony &amp; window bird feeders, garden accessories. Free delivery on orders above ₹999. Trusted by 5000+ bird lovers." />
+  <meta name="keywords" content="bird feeders India, bird feeder online, buy bird feeder India, bird feeder near me, bird house online India, water feeder for birds, balcony bird feeder, window bird feeder, hanging bird feeder, garden bird accessories, online bird shop India, bird care products, best bird feeder India, bird feeder with stand, automatic bird feeder, humming bird feeder India, bird feeding station, bird bath online India" />
   <link rel="canonical" href="https://skybeings.in/" />
+  <link rel="sitemap" type="application/xml" href="https://skybeings.in/sitemap.xml" />
   <meta name="google-site-verification" content="uI4_dK1FNBZbZXNlkzdJaYj2qXXlAzNX-PQhSatIJZI" />
+  <meta name="author" content="SkyBeings" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
-  <!-- ── Open Graph (Facebook / WhatsApp / LinkedIn) ──────────────────────── -->
+  <!-- ── Open Graph (Facebook / WhatsApp / LinkedIn) ───────────────────────────────────────────── -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="SkyBeings" />
-  <meta property="og:title" content="Premium Bird Feeders &amp; Houses Online India | SkyBeings" />
-  <meta property="og:description" content="Shop premium, all-weather bird feeders, water feeders, and bird houses at SkyBeings. Bring nature to your window with durable balcony and garden bird accessories." />
+  <meta property="og:title" content="SkyBeings — Premium Bird Feeders, Houses &amp; Water Feeders Online India" />
+  <meta property="og:description" content="Buy premium, all-weather bird feeders, water feeders &amp; bird houses online in India. Trusted by 5000+ bird lovers. Free delivery on orders above ₹999." />
   <meta property="og:url" content="https://skybeings.in/" />
   <meta property="og:image" content="https://skybeings.in/logo-cropped.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="SkyBeings - Premium Bird Feeder Shop India" />
   <meta property="og:locale" content="en_IN" />
 
-  <!-- ── Twitter Card ──────────────────────────────────────────────────────── -->
+  <!-- ── Twitter Card ────────────────────────────────────────────────────────────────────────────── -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Premium Bird Feeders &amp; Houses Online India | SkyBeings" />
-  <meta name="twitter:description" content="Shop premium, all-weather bird feeders, water feeders, and bird houses at SkyBeings." />
+  <meta name="twitter:site" content="@skybeings_in" />
+  <meta name="twitter:title" content="SkyBeings — Premium Bird Feeders &amp; Houses Online India" />
+  <meta name="twitter:description" content="Buy premium bird feeders, bird houses &amp; water feeders online in India. Free delivery on orders above ₹999." />
   <meta name="twitter:image" content="https://skybeings.in/logo-cropped.png" />
+  <meta name="twitter:image:alt" content="SkyBeings Bird Feeder Shop" />
 
-  <!-- ── JSON-LD Structured Data ───────────────────────────────────────────── -->
+  <!-- ── JSON-LD Structured Data ────────────────────────────────────────────────────────────────────── -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": ["Organization", "Store"],
         "@id": "https://skybeings.in/#organization",
         "name": "SkyBeings",
+        "alternateName": "Sky Beings",
         "url": "https://skybeings.in",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://skybeings.in/logo-cropped.png"
+          "url": "https://skybeings.in/logo-cropped.png",
+          "width": 200,
+          "height": 200
+        },
+        "image": "https://skybeings.in/logo-cropped.png",
+        "description": "SkyBeings sells premium bird feeders, water feeders, and bird houses for balcony and garden use across India. Trusted by 5000+ bird lovers.",
+        "priceRange": "₹₹",
+        "currenciesAccepted": "INR",
+        "paymentAccepted": "Cash, Credit Card, Debit Card, UPI, Net Banking",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "IN",
+          "addressRegion": "Maharashtra"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "email": "support@skybeings.in",
+          "availableLanguage": ["English", "Hindi"]
         },
         "sameAs": [
           "https://www.flipkart.com/search?q=skybeings"
         ],
-        "description": "SkyBeings sells premium bird feeders, water feeders, and bird houses for balcony and garden use across India."
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Bird Feeder & Bird House Products",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Bird Feeders" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Water Feeders for Birds" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Bird Houses" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Product", "name": "Bird Accessories" } }
+          ]
+        }
       },
       {
         "@type": "WebSite",
         "@id": "https://skybeings.in/#website",
         "url": "https://skybeings.in",
         "name": "SkyBeings",
+        "description": "Shop premium bird feeders, bird houses and water feeders online in India",
         "publisher": { "@id": "https://skybeings.in/#organization" },
+        "inLanguage": "en-IN",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://skybeings.in/shop?search={search_term_string}",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://skybeings.in/shop?search={search_term_string}"
+          },
           "query-input": "required name=search_term_string"
         }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://skybeings.in/#breadcrumb",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://skybeings.in" },
+          { "@type": "ListItem", "position": 2, "name": "Bird Feeders", "item": "https://skybeings.in/collections/bird-feeders" },
+          { "@type": "ListItem", "position": 3, "name": "Water Feeders", "item": "https://skybeings.in/collections/water-feeders" },
+          { "@type": "ListItem", "position": 4, "name": "Bird Houses", "item": "https://skybeings.in/collections/bird-houses" }
+        ]
+      },
+      {
+        "@type": "ItemList",
+        "name": "Product Collections at SkyBeings",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Bird Feeders", "url": "https://skybeings.in/collections/bird-feeders" },
+          { "@type": "ListItem", "position": 2, "name": "Water Feeders for Birds", "url": "https://skybeings.in/collections/water-feeders" },
+          { "@type": "ListItem", "position": 3, "name": "Bird Houses", "url": "https://skybeings.in/collections/bird-houses" },
+          { "@type": "ListItem", "position": 4, "name": "Bird Accessories", "url": "https://skybeings.in/collections/accessories" },
+          { "@type": "ListItem", "position": 5, "name": "Best Sellers", "url": "https://skybeings.in/collections/best-sellers" }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What types of bird feeders does SkyBeings sell?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "SkyBeings sells premium bird feeders including hanging bird feeders, window bird feeders, balcony bird feeders, tube feeders, platform feeders, and water feeders for birds. All products are durable and all-weather."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does SkyBeings offer free shipping on bird feeders?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, SkyBeings offers free delivery on all orders above ₹999 across India."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which birds visit SkyBeings bird feeders in India?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "SkyBeings bird feeders attract common Indian birds like sparrows, bulbuls, sunbirds, mynas, pigeons, and parrots. Our feeders are designed for Indian bird species."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I clean a bird feeder?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Clean your bird feeder every 1-2 weeks by disassembling it, rinsing with warm water, scrubbing with a brush, and letting it dry completely before refilling. Regular cleaning prevents mold and disease."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I return a bird feeder if not satisfied?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, SkyBeings has a hassle-free 7-day return policy. You can return products within 7 days of delivery if you are not satisfied. Please visit our Return Policy page for details."
+            }
+          }
+        ]
       }
     ]
   }
@@ -77,14 +205,44 @@
     preconnect: open TCP+TLS to these origins during HTML parse, BEFORE JS runs.
     This eliminates DNS lookup + handshake delay for the LCP banner image and API.
   -->
-  <!-- 
-    ── Critical API Preloads ──────────────────────────────────────────────
-    These tell the browser to start fetching data IMMEDIATELY upon seeing the HTML,
-    before main.jsx even downloads. This eliminates the "JS Gap" where the browser
-    is waiting for script parse/execution before knowing it needs banners.
+  <!--
+    ── Path-aware API Preloads ────────────────────────────────────────────
+    Banners + maintenance are ONLY needed on storefront pages (home, shop, collections).
+    Preloading them on /login or /admin wastes bandwidth and triggers browser warnings
+    ("preloaded but not used within a few seconds"). The inline script below checks
+    the current path before injecting the <link rel=preload> tags.
   -->
-  <link rel="preload" href="/api/v1/banners/active?page=home" as="fetch" crossorigin="use-credentials" />
-  <link rel="preload" href="/api/v1/settings/maintenance" as="fetch" crossorigin="use-credentials" />
+  <script>
+    (function () {
+      var path = window.location.pathname;
+      var isStorefront = path === '/' ||
+        path.startsWith('/collections') ||
+        path.startsWith('/shop') ||
+        path.startsWith('/product') ||
+        path.startsWith('/blogs') ||
+        path.startsWith('/gallery') ||
+        path.startsWith('/about') ||
+        path.startsWith('/contact') ||
+        path.startsWith('/bulk-orders') ||
+        path.startsWith('/dogs');
+      if (isStorefront) {
+        var head = document.head;
+        // Preload banners for current page
+        var pageKey = (path === '/' || path === '') ? 'home' : 'shop';
+        var bl = document.createElement('link');
+        bl.rel = 'preload'; bl.as = 'fetch';
+        bl.href = '/api/v1/banners/active?page=' + pageKey;
+        bl.setAttribute('crossorigin', 'use-credentials');
+        head.appendChild(bl);
+        // Preload maintenance setting
+        var ml = document.createElement('link');
+        ml.rel = 'preload'; ml.as = 'fetch';
+        ml.href = '/api/v1/settings/maintenance';
+        ml.setAttribute('crossorigin', 'use-credentials');
+        head.appendChild(ml);
+      }
+    })();
+  </script>
 
   <script>
     (function () {
@@ -123,24 +281,19 @@
     to free up the CPU main thread during initial page load and improve FCP/LCP.
   -->
   <script>
-    // 1. Data Layer and Google Ads stubs
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function () { dataLayer.push(arguments); };
+    // 1. Meta Pixel stub (GTM + GA4 are already loaded in <head>)
+    if (!window.fbq) {
+      var n = window.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!window._fbq) window._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = '2.0';
+      n.queue = [];
+    }
 
-    // 2. Meta Pixel stub
-    window.fbq = function () {
-      if (window.fbq.callMethod) {
-        window.fbq.callMethod.apply(window.fbq, arguments);
-      } else {
-        window.fbq.queue.push(arguments);
-      }
-    };
-    window.fbq.push = window.fbq;
-    window.fbq.loaded = true;
-    window.fbq.version = '2.0';
-    window.fbq.queue = [];
-
-    // 3. Lazy script loader
+    // 2. Lazy script loader — only for heavy 3rd-party scripts (Meta Pixel, Google Ads)
     (function () {
       var initialized = false;
 
@@ -154,16 +307,7 @@
         });
         clearTimeout(timeoutId);
 
-        // Load GTM
-        (function (w, d, s, l, i) {
-          w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-          var f = d.getElementsByTagName(s)[0], j = d.createElement(s),
-            dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true;
-          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-          f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-W3WQH94D');
-
-        // Google Analytics script is loaded statically in the <head> to satisfy GSC/GA detection.
+        // GTM and GA4 are already loaded in <head> — no need to load again.
 
         // Load Google Ads script
         var adsId = '%VITE_GOOGLE_ADS_ID%';
@@ -175,13 +319,24 @@
           window.gtag('config', adsId);
         }
 
-        // Load Meta Pixel script
-        var pixelScript = document.createElement('script');
-        pixelScript.async = true;
-        pixelScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
-        document.head.appendChild(pixelScript);
-        window.fbq('init', '298502654348777');
-        window.fbq('track', 'PageView');
+        // Check if Meta Pixel has already been loaded/initialized (e.g. by GTM)
+        var pixelAlreadyInitialized = false;
+        if (typeof window.fbq === 'function' && typeof window.fbq.getState === 'function') {
+          var state = window.fbq.getState();
+          if (state && state.pixels && state.pixels.indexOf('298502654348777') !== -1) {
+            pixelAlreadyInitialized = true;
+          }
+        }
+
+        // Load Meta Pixel script only if not already initialized/injected
+        if (!pixelAlreadyInitialized && !document.querySelector('script[src*="fbevents.js"]')) {
+          var pixelScript = document.createElement('script');
+          pixelScript.async = true;
+          pixelScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
+          document.head.appendChild(pixelScript);
+          window.fbq('init', '298502654348777');
+          window.fbq('track', 'PageView');
+        }
       }
 
       var events = ['scroll', 'click', 'mousemove', 'touchstart', 'keydown'];
@@ -196,12 +351,32 @@
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
+  <!-- Google Tag Manager (noscript fallback — required by GTM spec) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W3WQH94D" height="0" width="0"
       style="display:none;visibility:hidden"></iframe></noscript>
   <!-- Meta Pixel noscript fallback -->
   <noscript><img height="1" width="1" style="display:none"
       src="https://www.facebook.com/tr?id=298502654348777&ev=PageView&noscript=1" /></noscript>
+
+  <!-- 
+    ── Static Crawlable Navigation (SEO) ─────────────────────────────────────
+    These links are visually hidden but fully accessible to search engine crawlers.
+    They ensure Googlebot can discover all collection pages from the HTML shell
+    WITHOUT needing to execute JavaScript — critical for SPA indexing.
+    DO NOT remove: removing this breaks Google's ability to discover collection pages.
+  -->
+  <nav aria-label="Site collections" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">
+    <a href="/collections/bird-feeders">Bird Feeders</a>
+    <a href="/collections/water-feeders">Water Feeders for Birds</a>
+    <a href="/collections/bird-houses">Bird Houses</a>
+    <a href="/collections/accessories">Bird Accessories</a>
+    <a href="/collections/best-sellers">Best Sellers</a>
+    <a href="/collections/dogs">Dog Products</a>
+    <a href="/blogs">Bird Care Blog</a>
+    <a href="/about">About SkyBeings</a>
+    <a href="/contact">Contact Us</a>
+    <a href="/gallery">Gallery</a>
+  </nav>
 
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>

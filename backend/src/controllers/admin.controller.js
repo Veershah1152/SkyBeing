@@ -19,28 +19,32 @@ export const getAdminDashboard = asyncHandler(async (req, res) => {
     // === Core counts ===
     const totalUsers = await User.countDocuments();
     const totalProducts = await Product.countDocuments();
-    const totalOrders = await Order.countDocuments();
-    const pendingOrders = await Order.countDocuments({ orderStatus: "pending" });
+    // Count only confirmed, non-failed orders as the "real" order count
+    const totalOrders = await Order.countDocuments({ isConfirmed: true, paymentStatus: { $ne: "failed" } });
+    // "Pending" = orders needing action (pending + processing statuses)
+    const pendingOrders = await Order.countDocuments({ isConfirmed: true, orderStatus: { $in: ["pending", "processing"] } });
     const outOfStockProducts = await Product.countDocuments({ stock: 0 });
     const newUsersThisMonth = await User.countDocuments({ createdAt: { $gte: startOfThisMonth } });
 
-    // === Total Revenue (all completed payments) ===
+    // === Total Revenue (all confirmed orders — includes COD + paid online) ===
+    // NOTE: COD orders have paymentStatus="pending" but ARE real revenue once confirmed.
+    //       We use isConfirmed:true to capture both COD and online payments.
     const revenueAgg = await Order.aggregate([
-        { $match: { paymentStatus: "completed" } },
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" } } },
         { $group: { _id: null, total: { $sum: "$totalAmount" } } }
     ]);
     const totalRevenue = revenueAgg[0]?.total ?? 0;
 
     // === This month revenue ===
     const thisMonthRevenueAgg = await Order.aggregate([
-        { $match: { paymentStatus: "completed", createdAt: { $gte: startOfThisMonth } } },
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" }, createdAt: { $gte: startOfThisMonth } } },
         { $group: { _id: null, total: { $sum: "$totalAmount" } } }
     ]);
     const thisMonthRevenue = thisMonthRevenueAgg[0]?.total ?? 0;
 
     // === Last month revenue (for % change) ===
     const lastMonthRevenueAgg = await Order.aggregate([
-        { $match: { paymentStatus: "completed", createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } } },
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" }, createdAt: { $gte: startOfLastMonth, $lte: endOfLastMonth } } },
         { $group: { _id: null, total: { $sum: "$totalAmount" } } }
     ]);
     const lastMonthRevenue = lastMonthRevenueAgg[0]?.total ?? 0;
@@ -48,25 +52,26 @@ export const getAdminDashboard = asyncHandler(async (req, res) => {
         ? (((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100).toFixed(1)
         : null;
 
-    // === Today's stats ===
+    // === Today's stats (confirmed orders only) ===
     const todayOrdersAgg = await Order.aggregate([
-        { $match: { createdAt: { $gte: startOfToday } } },
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" }, createdAt: { $gte: startOfToday } } },
         { $group: { _id: null, count: { $sum: 1 }, revenue: { $sum: "$totalAmount" } } }
     ]);
     const todayOrders = todayOrdersAgg[0]?.count ?? 0;
     const todayRevenue = todayOrdersAgg[0]?.revenue ?? 0;
 
-    // === Order status breakdown ===
+    // === Order status breakdown (confirmed orders only) ===
     const orderStatusBreakdown = await Order.aggregate([
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" } } },
         { $group: { _id: "$orderStatus", count: { $sum: 1 } } }
     ]);
     const statusMap = {};
     orderStatusBreakdown.forEach(s => { statusMap[s._id] = s.count; });
 
-    // === Monthly sales trend (last 6 months) ===
+    // === Monthly sales trend (last 6 months, all confirmed orders) ===
     const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
     const monthlySales = await Order.aggregate([
-        { $match: { paymentStatus: "completed", createdAt: { $gte: sixMonthsAgo } } },
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" }, createdAt: { $gte: sixMonthsAgo } } },
         {
             $group: {
                 _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
@@ -78,21 +83,29 @@ export const getAdminDashboard = asyncHandler(async (req, res) => {
     ]);
 
     const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const formattedMonthlySales = monthlySales.map(item => ({
-        month: MONTH_NAMES[item._id.month - 1],
-        year: item._id.year,
-        sales: item.totalSales,
-        orders: item.count
-    }));
+    const formattedMonthlySales = Array.from({ length: 6 }, (_, i) => {
+        const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+        const year = d.getFullYear();
+        const monthNum = d.getMonth() + 1; // 1-indexed
+        
+        const found = monthlySales.find(item => item._id.year === year && item._id.month === monthNum);
+        return {
+            month: MONTH_NAMES[d.getMonth()],
+            year: year,
+            sales: found ? found.totalSales : 0,
+            orders: found ? found.count : 0
+        };
+    });
 
-    // === Recent 8 orders (confirmed only) ===
-    const recentOrders = await Order.find({ isConfirmed: true })
+    // === Recent 10 orders (confirmed, non-failed) ===
+    const recentOrders = await Order.find({ isConfirmed: true, paymentStatus: { $ne: "failed" } })
         .sort({ createdAt: -1 })
-        .limit(8)
+        .limit(10)
         .populate("userId", "name email");
 
-    // === Top 5 products by order frequency ===
+    // === Top 5 products by order frequency (confirmed orders only) ===
     const topProducts = await Order.aggregate([
+        { $match: { isConfirmed: true, paymentStatus: { $ne: "failed" } } },
         { $unwind: "$products" },
         { $group: { _id: "$products.productId", totalSold: { $sum: "$products.quantity" } } },
         { $sort: { totalSold: -1 } },
